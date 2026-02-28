@@ -1,6 +1,57 @@
+# =========================
+# ESP-IDF
+# =========================
 build/
 sdkconfig
 sdkconfig.old
-*.pyc
+
+# =========================
+# Python
+# =========================
 __pycache__/
+*.py[codz]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.pdm-python
+.pixi/
+
+# Testing / Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# =========================
+# Distribution / Packaging
+# =========================
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# =========================
+# IDE / Editors
+# =========================
 .vscode/
+.idea/
+.spyderproject
+.spyproject
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+
+# =========================
+# Logs / Misc
+# =========================
+*.log
+.env
