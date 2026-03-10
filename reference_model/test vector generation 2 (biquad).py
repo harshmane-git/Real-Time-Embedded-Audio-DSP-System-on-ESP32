@@ -120,6 +120,12 @@ def save_test(name, signal):
 
     print(name, "saved")
 
+def sine_sweep(fs, duration, f_start=20, f_end=8000):
+    t= np.linspace(0,duration, int(fs*duration), endpoint=False)
+    k=(f_end-f_start)/ duration
+    sweep= np.sin(2*np.pi*(f_start * t +0.5*k* t**2))
+    return sweep
+
 #Impulse Test- gives impulse response of the filter
 
 impulse = np.zeros(256)
@@ -156,6 +162,19 @@ save_test("sine1000", sine)
 np.random.seed(0)
 noise = np.random.randn(256)
 save_test("random", noise)
+# Sine sweep on whole filter (displayed on a spectrogram with freq time and decibel(power)
+duration = 3
+sweep= sine_sweep(fs, duration)
+save_test("sine_sweep", sweep)
+f, t_spec,Sxx=spectrogram(sweep, fs)
+plt.figure(figsize=(10,5))
+plt.pcolormesh(t_spec,f, 10*np.log10(Sxx))
+plt.ylabel("Frequency (Hz)")
+plt.xlabel("Time (s)")
+plt.title("Sine Sweep Spectrogram")
+
+plt.colorbar(label="Power (dB)")
+plt.show()
 
 
-print("\nAll 5 test vectors generated successfully.")
+print("\nAll 6 test vectors generated successfully.")
