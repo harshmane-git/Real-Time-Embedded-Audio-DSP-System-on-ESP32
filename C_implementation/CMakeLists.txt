@@ -1,0 +1,13 @@
+idf_component_register(
+    SRCS
+        "Band_Pass/band_pass.c"
+        "biquad/biquad.c"
+        "high_pass/high_pass.c"
+        "low_pass/low_pass.c"
+    INCLUDE_DIRS
+        "Band_Pass"
+        "biquad"
+        "dsp_types"
+        "high_pass"
+        "low_pass"
+)

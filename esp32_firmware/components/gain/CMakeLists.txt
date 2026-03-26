@@ -1,1 +1,0 @@
-idf_component_register(SRCS "gain.c" INCLUDE_DIRS ".")
