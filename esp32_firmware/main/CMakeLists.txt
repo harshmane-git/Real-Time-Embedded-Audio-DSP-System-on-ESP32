@@ -1,5 +1,2 @@
-idf_component_register(
-    SRCS "main.c"
-    INCLUDE_DIRS "."
-    REQUIRES audio_pipeline
-)
+idf_component_register(SRCS "esp32_audio_dsp.c"
+                    INCLUDE_DIRS ".")
