@@ -1,2 +1,5 @@
-idf_component_register(SRCS "esp32_audio_dsp.c"
-                    INCLUDE_DIRS ".")
+idf_component_register(
+    SRCS "main.c"
+    INCLUDE_DIRS "."
+    REQUIRES ring_buffer mic amp scheduler
+)

@@ -2,7 +2,6 @@
 #define MIC_H
 
 void mic_init(void);
-
-void mic_read_block(float *buffer, int size);
+void mic_task(void *arg);
 
 #endif
