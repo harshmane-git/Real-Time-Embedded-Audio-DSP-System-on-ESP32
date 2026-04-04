@@ -6,7 +6,7 @@ void high_pass_init(high_pass_t *hp) {
 }
 
 void high_pass_process_block(high_pass_t *hp, const float *input, float *output, int len) {
-    float temp[256];
+    float temp[4096];
     biquad_process_block(&hp->bq1, input, temp, len);
     biquad_process_block(&hp->bq2, temp, output, len);
 }

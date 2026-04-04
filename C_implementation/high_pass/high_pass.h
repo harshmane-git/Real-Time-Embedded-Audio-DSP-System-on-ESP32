@@ -3,10 +3,10 @@
 
 #include "biquad.h"
 
-// ───────────────────────────────────────────────
+
 // Coefficients for High-Pass 2000 Hz (4th order)
 // fs = 16000 Hz | Bark-Aligned | 4th Order Butterworth
-// ───────────────────────────────────────────────
+
 static const float hp_s1[5] = {0.51627979f, -1.03255959f, 0.51627979f, -0.85540037f, 0.20971880f};
 static const float hp_s2[5] = {0.67177700f, -1.34355400f, 0.67177700f, -1.11303657f, 0.57407142f};
 
