@@ -1,15 +1,15 @@
 #ifndef RING_BUFFER_H
 #define RING_BUFFER_H
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #define RB_NUM_SLOTS        8
 #define RB_SAMPLES_PER_SLOT 256
 
 typedef struct {
-    int32_t samples[RB_SAMPLES_PER_SLOT];
-    volatile bool ready;
+    float samples[RB_SAMPLES_PER_SLOT];   // float for DSP pipeline
+    volatile bool ready;                 // true = full, false = empty
 } rb_slot_t;
 
 typedef struct {
@@ -20,7 +20,8 @@ typedef struct {
 
 // API
 void rb_init(ring_buffer_t *rb);
-bool I2S_write(ring_buffer_t *rb, int32_t *data);
-bool DMA_read(ring_buffer_t *rb, int32_t *dest);
+bool rb_write_block(ring_buffer_t *rb, float *data);
+bool rb_read_block(ring_buffer_t *rb, float *dest);
+int  rb_slots_filled(ring_buffer_t *rb);
 
 #endif

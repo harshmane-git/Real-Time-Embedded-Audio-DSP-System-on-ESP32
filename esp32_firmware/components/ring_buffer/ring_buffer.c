@@ -1,6 +1,5 @@
 #include "ring_buffer.h"
 #include <string.h>
-#include <stdio.h>
 
 void rb_init(ring_buffer_t *rb)
 {
@@ -14,42 +13,47 @@ void rb_init(ring_buffer_t *rb)
     }
 }
 
-// PRODUCER (I2S DMA / ISR)
-bool I2S_write(ring_buffer_t *rb, int32_t *data)
+// PRODUCER (mic_task)
+bool rb_write_block(ring_buffer_t *rb, float *data)
 {
     int ws = rb->write_slot;
 
-    // overflow
+    // Overflow → drop block (real-time safe)
     if (rb->slots[ws].ready == true) {
-        // drop data (real-time safe choice)
-        printf("[RB] Overflow!\n");
         return false;
     }
 
     memcpy(rb->slots[ws].samples, data,
-           RB_SAMPLES_PER_SLOT * sizeof(int32_t));
+           RB_SAMPLES_PER_SLOT * sizeof(float));
 
-    rb->slots[ws].ready = true;  // LAST
+    rb->slots[ws].ready = true;  // mark full AFTER copy
 
     rb->write_slot = (rb->write_slot + 1) % RB_NUM_SLOTS;
 
     return true;
 }
 
-// CONSUMER (DSP)
-bool DMA_read(ring_buffer_t *rb, int32_t *dest)
+// CONSUMER (scheduler_task)
+bool rb_read_block(ring_buffer_t *rb, float *dest)
 {
     int rs = rb->read_slot;
 
+    // Underrun
     if (rb->slots[rs].ready == false)
-        return false; // underrun
+        return false;
 
     memcpy(dest, rb->slots[rs].samples,
-           RB_SAMPLES_PER_SLOT * sizeof(int32_t));
+           RB_SAMPLES_PER_SLOT * sizeof(float));
 
-    rb->slots[rs].ready = false; // LAST
+    rb->slots[rs].ready = false; // mark empty AFTER copy
 
     rb->read_slot = (rb->read_slot + 1) % RB_NUM_SLOTS;
 
     return true;
+}
+
+// Utility for scheduler
+int rb_slots_filled(ring_buffer_t *rb)
+{
+    return (rb->write_slot - rb->read_slot + RB_NUM_SLOTS) % RB_NUM_SLOTS;
 }
