@@ -1,12 +1,27 @@
 #include "high_pass.h"
 
-void high_pass_init(high_pass_t *hp) {
-    biquad_init(&hp->bq1, hp_s1);
-    biquad_init(&hp->bq2, hp_s2);
+STATUS high_pass_open(uint32_t *pui32Size) {
+    if (pui32Size == NULL) return STATUS_NOT_OK;
+    *pui32Size = sizeof(high_pass_hdl_t);
+    return STATUS_OK;
 }
 
-void high_pass_process_block(high_pass_t *hp, const float *input, float *output, int len) {
-    float temp[4096];
-    biquad_process_block(&hp->bq1, input, temp, len);
-    biquad_process_block(&hp->bq2, temp, output, len);
+STATUS high_pass_init(high_pass_hdl_t *phdl, const high_pass_config_t *psConfig) {
+    if (phdl == NULL || psConfig == NULL) return STATUS_NOT_OK;
+    biquad_init(&phdl->bq1, psConfig->s1);
+    biquad_init(&phdl->bq2, psConfig->s2);
+    return STATUS_OK;
+}
+
+STATUS high_pass_process(high_pass_hdl_t *phdl, const float *pfInput, float *pfOutput, uint32_t ui32NumSamples) {
+    if (phdl == NULL || pfInput == NULL || pfOutput == NULL) return STATUS_NOT_OK;
+    float temp[256];
+    biquad_process_block(&phdl->bq1, pfInput, temp, ui32NumSamples);
+    biquad_process_block(&phdl->bq2, temp, pfOutput, ui32NumSamples);
+    return STATUS_OK;
+}
+
+STATUS high_pass_close(high_pass_hdl_t *phdl) {
+    if (phdl == NULL) return STATUS_NOT_OK;
+    return STATUS_OK;
 }
