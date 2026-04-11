@@ -1,12 +1,27 @@
 #include "low_pass.h"
 
-void low_pass_init(low_pass_t *lp) {
-    biquad_init(&lp->bq1, lp_s1);
-    biquad_init(&lp->bq2, lp_s2);
+STATUS low_pass_open(uint32_t *pui32Size) {
+    if (pui32Size == NULL) return STATUS_NOT_OK;
+    *pui32Size = sizeof(low_pass_hdl_t);
+    return STATUS_OK;
 }
 
-void low_pass_process_block(low_pass_t *lp, const float *input, float *output, int len) {
-    float temp[4096];
-    biquad_process_block(&lp->bq1, input, temp, len);
-    biquad_process_block(&lp->bq2, temp, output, len);
+STATUS low_pass_init(low_pass_hdl_t *phdl, const low_pass_config_t *psConfig) {
+    if (phdl == NULL || psConfig == NULL) return STATUS_NOT_OK;
+    biquad_init(&phdl->bq1, psConfig->s1);
+    biquad_init(&phdl->bq2, psConfig->s2);
+    return STATUS_OK;
+}
+
+STATUS low_pass_process(low_pass_hdl_t *phdl, const float *pfInput, float *pfOutput, uint32_t ui32NumSamples) {
+    if (phdl == NULL || pfInput == NULL || pfOutput == NULL) return STATUS_NOT_OK;
+    float temp[256];
+    biquad_process_block(&phdl->bq1, pfInput, temp, ui32NumSamples);
+    biquad_process_block(&phdl->bq2, temp, pfOutput, ui32NumSamples);
+    return STATUS_OK;
+}
+
+STATUS low_pass_close(low_pass_hdl_t *phdl) {
+    if (phdl == NULL) return STATUS_NOT_OK;
+    return STATUS_OK;
 }
