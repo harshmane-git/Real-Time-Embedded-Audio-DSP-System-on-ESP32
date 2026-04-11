@@ -1,25 +1,40 @@
-#include "../inc/biquad.h"     // or "/biquad.h" if you still have path issues
+#include "biquad.h"
 
-void biquad_init(biquad_t *bq, const float coeffs[5]) {
-    bq->b0 = coeffs[0];
-    bq->b1 = coeffs[1];
-    bq->b2 = coeffs[2];
-    bq->a1 = coeffs[3];
-    bq->a2 = coeffs[4];
-    bq->w1 = 0.0f;
-    bq->w2 = 0.0f;
+STATUS biquad_open(uint32_t *pui32Size) {
+    if (pui32Size == NULL) return STATUS_NOT_OK;
+    *pui32Size = sizeof(biquad_t);
+    return STATUS_OK;
 }
 
-float biquad_process_sample(biquad_t *bq, float x) {
-    float w0 = x - bq->a1 * bq->w1 - bq->a2 * bq->w2;
-    float y = bq->b0 * w0 + bq->b1 * bq->w1 + bq->b2 * bq->w2;
-    bq->w2 = bq->w1;
-    bq->w1 = w0;
-    return y;
+STATUS biquad_init(biquad_t *phdl, const float coeffs[5]) {
+    if (phdl == NULL || coeffs == NULL) return STATUS_NOT_OK;
+
+    phdl->b[0] = coeffs[0];
+    phdl->b[1] = coeffs[1];
+    phdl->b[2] = coeffs[2];
+    phdl->a[0] = coeffs[3];
+    phdl->a[1] = coeffs[4];
+
+    phdl->w[0] = 0.0f;
+    phdl->w[1] = 0.0f;
+
+    return STATUS_OK;
 }
 
-void biquad_process_block(biquad_t *bq, const float *input, float *output, int len) {
-    for (int i = 0; i < len; i++) {
-        output[i] = biquad_process_sample(bq, input[i]);
+STATUS biquad_process_block(biquad_t *phdl, const float *pfInput, float *pfOutput, uint32_t ui32NumSamples) {
+    if (phdl == NULL || pfInput == NULL || pfOutput == NULL) return STATUS_NOT_OK;
+
+    for (uint32_t i = 0; i < ui32NumSamples; i++) {
+        float x = pfInput[i];
+        float w0 = x - phdl->a[0] * phdl->w[0] - phdl->a[1] * phdl->w[1];
+        pfOutput[i] = phdl->b[0] * w0 + phdl->b[1] * phdl->w[0] + phdl->b[2] * phdl->w[1];
+        phdl->w[1] = phdl->w[0];
+        phdl->w[0] = w0;
     }
+    return STATUS_OK;
+}
+
+STATUS biquad_close(biquad_t *phdl) {
+    if (phdl == NULL) return STATUS_NOT_OK;
+    return STATUS_OK;
 }
