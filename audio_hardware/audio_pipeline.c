@@ -94,11 +94,13 @@ STATUS audio_Close(audio_hdl *hdl)
 
     if (hdl->mic)
     {
+        mic_Close(hdl->mic);
         free(hdl->mic);
     }
 
     if (hdl->amp)
     {
+        amp_Close(hdl->amp);
         free(hdl->amp);
     }
 

@@ -17,7 +17,6 @@ STATUS mic_Initialize(mic_hdl *hdl, const mic_config *cfg)
 {
     // 🔥 I2S CONFIG (RX)
     i2s_chan_handle_t rx_handle;
-    hdl->handle = rx_handle;
 
     i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_PORT, I2S_ROLE_MASTER);
     i2s_new_channel(&chan_cfg, NULL, &rx_handle);
@@ -37,6 +36,7 @@ STATUS mic_Initialize(mic_hdl *hdl, const mic_config *cfg)
     i2s_channel_init_std_mode(rx_handle, &std_cfg);
     i2s_channel_enable(rx_handle);
 
+    hdl->handle = rx_handle;
     hdl->dummy = (int)rx_handle;
 
     return STATUS_OK;

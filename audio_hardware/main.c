@@ -57,4 +57,6 @@ void app_main(void)
 
         audio_Process(&hdl);
     }
+
+    audio_Close(&hdl);
 }

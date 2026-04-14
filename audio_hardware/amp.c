@@ -13,8 +13,7 @@ STATUS amp_Open(uint32_t *size)
 
 STATUS amp_Initialize(amp_hdl *hdl, const amp_config *cfg)
 {
-    hdl->handle = tx_handle;
-    i2s_chan_handle_t tx_handle = (i2s_chan_handle_t)hdl->handle;
+    i2s_chan_handle_t tx_handle;
 
     i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_PORT, I2S_ROLE_MASTER);
     i2s_new_channel(&chan_cfg, &tx_handle, NULL);
@@ -34,6 +33,7 @@ STATUS amp_Initialize(amp_hdl *hdl, const amp_config *cfg)
     i2s_channel_init_std_mode(tx_handle, &std_cfg);
     i2s_channel_enable(tx_handle);
 
+    hdl->handle = tx_handle;
     hdl->dummy = (int)tx_handle;
 
     return STATUS_OK;
@@ -48,7 +48,7 @@ STATUS amp_Process(amp_hdl *hdl, const float *input, uint32_t samples)
         float sample = input[i];
 
         // 🔥 saturation
-        if (sample > 1.0f) sample = 1.0f;                   //corrections
+        if (sample > 1.0f) sample = 1.0f;
         if (sample < -1.0f) sample = -1.0f;
 
         i2s_tx_buffer[i] = (int32_t)(sample * 2147483647);
@@ -61,5 +61,10 @@ STATUS amp_Process(amp_hdl *hdl, const float *input, uint32_t samples)
                   &bytes_written,
                   portMAX_DELAY);
 
-        return STATUS_OK;
+    return STATUS_OK;
+}
+
+STATUS amp_Close(amp_hdl *hdl)
+{
+    return STATUS_OK;
 }
