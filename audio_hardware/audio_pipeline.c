@@ -154,10 +154,10 @@ STATUS audio_Initialize(audio_hdl *hdl)
     printf("  Sample rate: %u Hz\n", AUDIO_SAMPLE_RATE);
     printf("  Block size: %u samples (%.2f ms)\n", AUDIO_BLOCK_SIZE, 
            (float)AUDIO_BLOCK_SIZE * 1000 / AUDIO_SAMPLE_RATE);
-   printf("  Ring buffer: %u samples / %u slots (capacity: %.2f ms, pipeline latency: %.2f ms)\n",
-       AUDIO_RB_SIZE, AUDIO_RB_SLOTS,
-       (float)AUDIO_RB_SIZE * 1000 / AUDIO_SAMPLE_RATE,
-       (float)AUDIO_BLOCK_SIZE * 1000 / AUDIO_SAMPLE_RATE);
+    printf("  Ring buffer: %u samples / %u slots (capacity: %.2f ms, pipeline latency: %.2f ms)\n",
+        AUDIO_RB_SIZE, AUDIO_RB_SLOTS,
+        (float)AUDIO_RB_SIZE * 1000 / AUDIO_SAMPLE_RATE,
+        (float)AUDIO_BLOCK_SIZE * 1000 / AUDIO_SAMPLE_RATE);
     printf("  Presets: %u available (0-%u)\n", NUM_PRESETS, PRESET_MAX);
 
     return STATUS_OK;
