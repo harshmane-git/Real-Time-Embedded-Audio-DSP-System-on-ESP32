@@ -24,20 +24,19 @@ STATUS rb_Initialize(rb_hdl *hdl, const rb_config *cfg)
 
 STATUS rb_Process(rb_hdl *hdl, const float *input, float *output, uint32_t samples)
 {
-    // 🔹 WRITE (circular overwrite if full)
+    // 🔹 WRITE (drop new data if buffer full)
     for (uint32_t i = 0; i < samples; i++)
     {
-        hdl->buffer[hdl->write] = input[i];
-        hdl->write = (hdl->write + 1) % hdl->size;
-
         if (hdl->count < hdl->size)
         {
+            hdl->buffer[hdl->write] = input[i];
+            hdl->write = (hdl->write + 1) % hdl->size;
             hdl->count++;
         }
         else
         {
-            // overwrite oldest → move read pointer
-            hdl->read = (hdl->read + 1) % hdl->size;
+            // buffer full - drop new sample, don't overwrite
+            return STATUS_NOT_OK;
         }
     }
 
@@ -57,6 +56,10 @@ STATUS rb_Process(rb_hdl *hdl, const float *input, float *output, uint32_t sampl
 
 STATUS rb_Close(rb_hdl *hdl)
 {
-    free(hdl->buffer);
+    if (hdl->buffer)
+    {
+        free(hdl->buffer);
+        hdl->buffer = NULL;
+    }
     return STATUS_OK;
 }

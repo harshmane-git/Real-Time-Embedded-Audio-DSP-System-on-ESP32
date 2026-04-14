@@ -2,17 +2,18 @@
 #define MIC_H
 
 #include "common_types.h"
+#include "driver/i2s_std.h"
 #include <stdint.h>
+
+typedef struct
+{
+    i2s_chan_handle_t handle;
+} mic_hdl;
 
 typedef struct
 {
     uint32_t sample_rate;
 } mic_config;
-
-typedef struct
-{
-    void *handle;
-} mic_hdl;
 
 STATUS mic_Open(uint32_t *size);
 STATUS mic_Initialize(mic_hdl *hdl, const mic_config *cfg);

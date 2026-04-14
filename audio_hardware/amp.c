@@ -34,14 +34,13 @@ STATUS amp_Initialize(amp_hdl *hdl, const amp_config *cfg)
     i2s_channel_enable(tx_handle);
 
     hdl->handle = tx_handle;
-    hdl->dummy = (int)tx_handle;
 
     return STATUS_OK;
 }
 
 STATUS amp_Process(amp_hdl *hdl, const float *input, uint32_t samples)
 {
-    i2s_chan_handle_t tx_handle = (i2s_chan_handle_t)hdl->dummy;
+    i2s_chan_handle_t tx_handle = hdl->handle;
 
     for (uint32_t i = 0; i < samples; i++)
     {
@@ -66,5 +65,8 @@ STATUS amp_Process(amp_hdl *hdl, const float *input, uint32_t samples)
 
 STATUS amp_Close(amp_hdl *hdl)
 {
+    i2s_chan_handle_t tx_handle = hdl->handle;
+    i2s_channel_disable(tx_handle);
+    i2s_del_channel(tx_handle);
     return STATUS_OK;
 }

@@ -37,7 +37,6 @@ STATUS mic_Initialize(mic_hdl *hdl, const mic_config *cfg)
     i2s_channel_enable(rx_handle);
 
     hdl->handle = rx_handle;
-    hdl->dummy = (int)rx_handle;
 
     return STATUS_OK;
 }
@@ -45,7 +44,7 @@ STATUS mic_Initialize(mic_hdl *hdl, const mic_config *cfg)
 STATUS mic_Process(mic_hdl *hdl, float *output, uint32_t samples)
 {
     size_t bytes_read;
-    i2s_chan_handle_t rx_handle = (i2s_chan_handle_t)hdl->dummy;
+    i2s_chan_handle_t rx_handle = hdl->handle;
 
     i2s_channel_read(rx_handle, i2s_buffer, samples * sizeof(int32_t), &bytes_read, portMAX_DELAY);
 
@@ -60,5 +59,8 @@ STATUS mic_Process(mic_hdl *hdl, float *output, uint32_t samples)
 
 STATUS mic_Close(mic_hdl *hdl)
 {
+    i2s_chan_handle_t rx_handle = hdl->handle;
+    i2s_channel_disable(rx_handle);
+    i2s_del_channel(rx_handle);
     return STATUS_OK;
 }
