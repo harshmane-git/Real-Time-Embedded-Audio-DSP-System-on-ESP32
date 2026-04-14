@@ -2,6 +2,7 @@
 #define MIC_H
 
 #include "common_types.h"
+#include "audio_config.h"
 #include "driver/i2s_std.h"
 #include <stdint.h>
 

@@ -1,10 +1,6 @@
 #include "amp.h"
 #include "driver/i2s_std.h"
 
-#define I2S_PORT I2S_NUM_1
-
-static int32_t i2s_tx_buffer[256];
-
 STATUS amp_Open(uint32_t *size)
 {
     *size = sizeof(amp_hdl);
@@ -15,17 +11,17 @@ STATUS amp_Initialize(amp_hdl *hdl, const amp_config *cfg)
 {
     i2s_chan_handle_t tx_handle;
 
-    i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(I2S_PORT, I2S_ROLE_MASTER);
+    i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(AMP_I2S_PORT, I2S_ROLE_MASTER);
     i2s_new_channel(&chan_cfg, &tx_handle, NULL);
 
     i2s_std_config_t std_cfg = {
-        .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(16000),
+        .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(cfg->sample_rate),
         .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_MONO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
-            .bclk = 27,
-            .ws = 14,
-            .dout = 22,
+            .bclk = AMP_GPIO_BCLK,
+            .ws = AMP_GPIO_WS,
+            .dout = AMP_GPIO_DOUT,
             .din = I2S_GPIO_UNUSED
         }
     };
@@ -40,13 +36,14 @@ STATUS amp_Initialize(amp_hdl *hdl, const amp_config *cfg)
 
 STATUS amp_Process(amp_hdl *hdl, const float *input, uint32_t samples)
 {
+    static int32_t i2s_tx_buffer[AUDIO_BLOCK_SIZE];
     i2s_chan_handle_t tx_handle = hdl->handle;
 
     for (uint32_t i = 0; i < samples; i++)
     {
         float sample = input[i];
 
-        // 🔥 saturation
+        // 🔥 Saturation - clip to [-1.0, 1.0]
         if (sample > 1.0f) sample = 1.0f;
         if (sample < -1.0f) sample = -1.0f;
 
@@ -55,10 +52,10 @@ STATUS amp_Process(amp_hdl *hdl, const float *input, uint32_t samples)
 
     size_t bytes_written;
     i2s_channel_write(tx_handle,
-                  i2s_tx_buffer,
-                  samples * sizeof(int32_t),
-                  &bytes_written,
-                  portMAX_DELAY);
+                      i2s_tx_buffer,
+                      samples * sizeof(int32_t),
+                      &bytes_written,
+                      portMAX_DELAY);
 
     return STATUS_OK;
 }
