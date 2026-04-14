@@ -44,7 +44,7 @@ STATUS audio_Initialize(audio_hdl *hdl)
 {
     mic_config mic_cfg = {16000};
     amp_config amp_cfg = {16000};
-    rb_config rb_cfg = {512};
+    rb_config rb_cfg = {0};
 
     if (mic_Initialize(hdl->mic, &mic_cfg) != STATUS_OK)
         return STATUS_NOT_OK;

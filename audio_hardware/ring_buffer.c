@@ -1,5 +1,6 @@
 #include "ring_buffer.h"
 #include <stdlib.h>
+#include <string.h>
 
 STATUS rb_Open(uint32_t *size)
 {
@@ -9,46 +10,65 @@ STATUS rb_Open(uint32_t *size)
 
 STATUS rb_Initialize(rb_hdl *hdl, const rb_config *cfg)
 {
-    hdl->size = cfg->size;
-    hdl->buffer = malloc(sizeof(float) * hdl->size);
+    // Allocate: 8 slots × 256 samples × sizeof(float) = 8KB
+    hdl->buffer = malloc(RB_TOTAL_SAMPLES * sizeof(float));
 
     if (!hdl->buffer)
         return STATUS_NOT_OK;
 
-    hdl->write = 0;
-    hdl->read = 0;
-    hdl->count = 0;
+    // Initialize all slots to zero
+    memset(hdl->buffer, 0, RB_TOTAL_SAMPLES * sizeof(float));
+
+    hdl->write_slot = 0;
+    hdl->read_slot = 0;
+    hdl->write_pos = 0;
+    hdl->read_pos = 0;
+    hdl->slots_available = 0;
 
     return STATUS_OK;
 }
 
 STATUS rb_Process(rb_hdl *hdl, const float *input, float *output, uint32_t samples)
 {
-    // 🔹 WRITE (drop new data if buffer full)
-    for (uint32_t i = 0; i < samples; i++)
-    {
-        if (hdl->count < hdl->size)
-        {
-            hdl->buffer[hdl->write] = input[i];
-            hdl->write = (hdl->write + 1) % hdl->size;
-            hdl->count++;
-        }
-        else
-        {
-            // buffer full - drop new sample, don't overwrite
-            return STATUS_NOT_OK;
-        }
-    }
-
-    // 🔹 READ
-    if (hdl->count < samples)
+    // Ensure we're processing BLOCK_SIZE (256) samples
+    if (samples != RB_SAMPLES_PER_SLOT)
         return STATUS_NOT_OK;
 
+    // 🔹 WRITE: Write 256 samples into current write slot
+    uint32_t write_base_index = hdl->write_slot * RB_SAMPLES_PER_SLOT;
+    
     for (uint32_t i = 0; i < samples; i++)
     {
-        output[i] = hdl->buffer[hdl->read];
-        hdl->read = (hdl->read + 1) % hdl->size;
-        hdl->count--;
+        hdl->buffer[write_base_index + i] = input[i];
+    }
+
+    // Move to next slot after writing complete slot
+    hdl->write_slot = (hdl->write_slot + 1) % RB_SLOTS;
+    hdl->slots_available++;
+
+    // 🔹 READ: Check if we have complete slot available
+    if (hdl->slots_available <= 0)
+    {
+        // No complete slot available for reading
+        return STATUS_NOT_OK;
+    }
+
+    // Read 256 samples from current read slot
+    uint32_t read_base_index = hdl->read_slot * RB_SAMPLES_PER_SLOT;
+    
+    for (uint32_t i = 0; i < samples; i++)
+    {
+        output[i] = hdl->buffer[read_base_index + i];
+    }
+
+    // Move to next slot after reading complete slot
+    hdl->read_slot = (hdl->read_slot + 1) % RB_SLOTS;
+    hdl->slots_available--;
+
+    // Ensure read doesn't exceed write
+    if (hdl->read_slot == hdl->write_slot && hdl->slots_available < 0)
+    {
+        return STATUS_NOT_OK;  // Read caught up to write
     }
 
     return STATUS_OK;
@@ -61,5 +81,11 @@ STATUS rb_Close(rb_hdl *hdl)
         free(hdl->buffer);
         hdl->buffer = NULL;
     }
+    hdl->write_slot = 0;
+    hdl->read_slot = 0;
+    hdl->write_pos = 0;
+    hdl->read_pos = 0;
+    hdl->slots_available = 0;
+    
     return STATUS_OK;
 }
