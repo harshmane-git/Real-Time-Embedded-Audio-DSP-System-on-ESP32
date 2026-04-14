@@ -30,6 +30,10 @@ STATUS rb_Process(rb_hdl *hdl, const float *input, float *output, uint32_t sampl
             hdl->write = (hdl->write + 1) % hdl->size;
             hdl->count++;
         }
+        else
+        {
+            return STATUS_NOT_OK; //buffer full flag
+        }
     }
 
     // read

@@ -1,19 +1,24 @@
 #include "mic.h"
 #include "ring_buffer.h"
-#include "driver/i2s.h"
+//#include "driver/i2s.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include <stdint.h>
+#include <math.h>
+
+#define PI 3.14159265f
+#define FREQ 440.0f        // 440 Hz tone (A note)
+#define SAMPLE_RATE 16000.0f
 
 #define I2S_PORT    I2S_NUM_0
-#define SAMPLE_RATE 16000
+#define TEST_FREQ 1000  // 1 kHz
 
 #define I2S_BCLK    26
 #define I2S_LRC     25
 #define I2S_DIN     33
 
 void mic_init(void)
-{
+{ /*
     i2s_config_t i2s_config = {
         .mode                 = I2S_MODE_MASTER | I2S_MODE_RX,
         .sample_rate          = SAMPLE_RATE,
@@ -38,9 +43,10 @@ void mic_init(void)
     i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
     i2s_set_pin(I2S_PORT, &pin_config);
     i2s_zero_dma_buffer(I2S_PORT);
+    */
 }
 
-void mic_task(void *arg)
+/*void mic_task(void *arg)
 {
     ring_buffer_t *rb = (ring_buffer_t *)arg;
 
@@ -72,5 +78,33 @@ void mic_task(void *arg)
         {
             // overflow → drop block (real-time safe)
         }
+    }
+}*/
+
+
+void mic_task(void *arg)
+{
+    ring_buffer_t *rb = (ring_buffer_t *)arg;
+
+    float block[RB_SAMPLES_PER_SLOT];
+
+    static float phase = 0.0f;
+    float phase_inc = 2 * PI * FREQ / SAMPLE_RATE;
+
+    while (1)
+    {
+        for (int i = 0; i < RB_SAMPLES_PER_SLOT; i++)
+        {
+            block[i] = 0.5f * sinf(phase);   // amplitude 0.5
+
+            phase += phase_inc;
+            if (phase > 2 * PI)
+                phase -= 2 * PI;
+        }
+
+        rb_write_block(rb, block);
+
+        // simulate real-time (256 samples @ 16kHz ≈ 16ms)
+        vTaskDelay(pdMS_TO_TICKS(16));
     }
 }

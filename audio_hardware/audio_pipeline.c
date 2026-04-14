@@ -7,7 +7,7 @@
 static float input_block[BLOCK_SIZE];
 static float output_block[BLOCK_SIZE];
 
-static volatile int preset_request = 0;
+volatile int preset_request = 0;
 static int current_preset = 0;
 
 typedef struct
@@ -21,6 +21,42 @@ static preset_config presets[] =
     {0.5f},
     {2.0f}
 };
+
+STATUS audio_Open(audio_hdl *hdl)
+{
+    hdl->mic = malloc(sizeof(mic_hdl));
+    hdl->amp = malloc(sizeof(amp_hdl));
+    hdl->rb  = malloc(sizeof(rb_hdl));
+
+    if (!hdl->mic || !hdl->amp || !hdl->rb)
+    {
+        if (hdl->mic) free(hdl->mic);
+        if (hdl->amp) free(hdl->amp);
+        if (hdl->rb)  free(hdl->rb);
+
+        return STATUS_NOT_OK;
+    }
+
+    return STATUS_OK;
+}
+
+STATUS audio_Initialize(audio_hdl *hdl)
+{
+    mic_config mic_cfg = {16000};
+    amp_config amp_cfg = {16000};
+    rb_config rb_cfg = {512};
+
+    if (mic_Initialize(hdl->mic, &mic_cfg) != STATUS_OK)
+        return STATUS_NOT_OK;
+
+    if (amp_Initialize(hdl->amp, &amp_cfg) != STATUS_OK)
+        return STATUS_NOT_OK;
+
+    if (rb_Initialize(hdl->rb, &rb_cfg) != STATUS_OK)
+        return STATUS_NOT_OK;
+
+    return STATUS_OK;
+}
 
 STATUS audio_Process(audio_hdl *hdl)
 {
@@ -41,6 +77,29 @@ STATUS audio_Process(audio_hdl *hdl)
     if (rb_Process(hdl->rb, input_block, output_block, BLOCK_SIZE) == STATUS_OK)
     {
         amp_Process(hdl->amp, output_block, BLOCK_SIZE);
+    }
+
+    return STATUS_OK;
+}
+
+STATUS audio_Close(audio_hdl *hdl)
+{
+    if (!hdl) return STATUS_NOT_OK;
+
+    if (hdl->rb)
+    {
+        rb_Close(hdl->rb);
+        free(hdl->rb);
+    }
+
+    if (hdl->mic)
+    {
+        free(hdl->mic);
+    }
+
+    if (hdl->amp)
+    {
+        free(hdl->amp);
     }
 
     return STATUS_OK;

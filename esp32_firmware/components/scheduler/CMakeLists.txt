@@ -1,8 +1,5 @@
 idf_component_register(
     SRCS "scheduler.c"
     INCLUDE_DIRS "."
-    REQUIRES
-        ring_buffer
-        amp
-        freertos
+    REQUIRES ring_buffer amp gain
 )

@@ -11,7 +11,7 @@ typedef struct
 
 typedef struct
 {
-    int dummy;
+    void *handle;
 } amp_hdl;
 
 STATUS amp_Open(uint32_t *size);

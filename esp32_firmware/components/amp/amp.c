@@ -1,6 +1,6 @@
 #include "amp.h"
 #include "ring_buffer.h"
-#include "driver/i2s.h"
+//#include "driver/i2s.h"
 #include "freertos/FreeRTOS.h"
 #include <stdint.h>
 
@@ -12,7 +12,7 @@
 #define I2S_DOUT    22
 
 void amp_init(void)
-{
+{ /*
     i2s_config_t i2s_config = {
         .mode                 = I2S_MODE_MASTER | I2S_MODE_TX,
         .sample_rate          = SAMPLE_RATE,
@@ -35,9 +35,10 @@ void amp_init(void)
     i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
     i2s_set_pin(I2S_PORT, &pin_config);
     i2s_zero_dma_buffer(I2S_PORT);
+    */
 }
 
-void amp_write_block(float *buffer, int size)
+/* void amp_write_block(float *buffer, int size)
 {
     if (size > RB_SAMPLES_PER_SLOT) return;
 
@@ -60,4 +61,10 @@ void amp_write_block(float *buffer, int size)
               size * sizeof(int16_t),
               &bytes_written,
               portMAX_DELAY);
+}*/
+
+
+void amp_write_block(float *buffer, int size)
+{
+    printf("%f\n", buffer[0]);
 }

@@ -11,7 +11,7 @@ typedef struct
 
 typedef struct
 {
-    int dummy;
+    void *handle;
 } mic_hdl;
 
 STATUS mic_Open(uint32_t *size);

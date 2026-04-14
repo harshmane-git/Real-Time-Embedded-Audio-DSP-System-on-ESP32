@@ -1,0 +1,1118 @@
+Executing action: monitor
+Serial port /dev/ttyUSB0:
+Connecting.....
+Detecting chip type... ESP32
+Running idf_monitor in directory /home/harsh_m/esp/esp32_audio_DSP/esp32_firmware
+Executing "/home/harsh_m/.espressif/python_env/idf6.1_py3.12_env/bin/python /home/harsh_m/esp/esp-idf/tools/idf_monitor.py -p /dev/ttyUSB0 -b 115200 --toolchain-prefix xtensa-esp32-elf- --target esp32 --revision 0 /home/harsh_m/esp/esp32_audio_DSP/esp32_firmware/build/esp32_audio_dsp.elf /home/harsh_m/esp/esp32_audio_DSP/esp32_firmware/build/bootloader/bootloader.elf -m '/home/harsh_m/.espressif/python_env/idf6.1_py3.12_env/bin/python' '/home/harsh_m/esp/esp-idf/tools/idf.py'"...
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0040,len:6272
+load:0x40078000,len:15848
+load:0x40080400,len:3920
+entry 0x40080644
+[0;32mI (27) boot: ESP-IDF v6.1-dev-2748-g490691bc61 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Apr  1 2026 02:22:53[0m
+[0;32mI (28) boot: Multicore bootloader[0m
+[0;32mI (30) boot: chip revision: v3.1[0m
+[0;32mI (33) boot.esp32: SPI Speed      : 40MHz[0m
+[0;32mI (37) boot.esp32: SPI Mode       : DIO[0m
+[0;32mI (40) boot.esp32: SPI Flash Size : 2MB[0m
+[0;32mI (44) boot: Enabling RNG early entropy source...[0m
+[0;32mI (49) boot: Partition Table:[0m
+[0;32mI (51) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (57) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (64) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (71) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (77) boot: End of partition table[0m
+[0;32mI (80) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=088f0h ( 35056) map[0m
+[0;32mI (100) esp_image: segment 1: paddr=00018918 vaddr=3ffb0000 size=029fch ( 10748) load[0m
+[0;32mI (105) esp_image: segment 2: paddr=0001b31c vaddr=40080000 size=04cfch ( 19708) load[0m
+[0;32mI (113) esp_image: segment 3: paddr=00020020 vaddr=400d0020 size=0ce08h ( 52744) map[0m
+[0;32mI (132) esp_image: segment 4: paddr=0002ce30 vaddr=40084cfc size=05e0ch ( 24076) load[0m
+[0;32mI (142) esp_image: segment 5: paddr=00032c44 vaddr=50000000 size=00028h (    40) load[0m
+[0;32mI (148) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (148) boot: Disabling RNG early entropy source...[0m
+[0;32mI (160) cpu_start: Multicore app[0m
+[0;32mI (169) cpu_start: GPIO 3 and 1 are used as console UART I/O pins[0m
+[0;32mI (169) cpu_start: Pro cpu start user code[0m
+[0;32mI (169) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (171) app_init: Application information:[0m
+[0;32mI (174) app_init: Project name:     esp32_audio_dsp[0m
+[0;32mI (179) app_init: App version:      daa39c8-dirty[0m
+[0;32mI (183) app_init: Compile time:     Apr  5 2026 02:00:47[0m
+[0;32mI (189) app_init: ELF file SHA256:  f05a1b4d8...[0m
+[0;32mI (193) app_init: ESP-IDF:          v6.1-dev-2748-g490691bc61[0m
+[0;32mI (198) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (202) efuse_init: Max chip rev:     v3.99 [0m
+[0;32mI (206) efuse_init: Chip rev:         v3.1[0m
+[0;32mI (210) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (216) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (221) heap_init: At 3FFB53D0 len 0002AC30 (171 KiB): DRAM[0m
+[0;32mI (227) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (232) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (238) heap_init: At 4008AB08 len 000154F8 (85 KiB): IRAM[0m
+[0;33mW (244) spi_flash: Detected boya flash chip but using generic driver. For optimal functionality, enable `SPI_FLASH_SUPPORT_BOYA_CHIP` in menuconfig[0m
+[0;32mI (256) spi_flash: detected chip: generic[0m
+[0;32mI (259) spi_flash: flash io: dio[0m
+[0;33mW (262) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (276) main_task: Started on CPU0[0m
+[0;32mI (286) main_task: Calling app_main()[0m
+=== NEW DSP PIPELINE STARTED ===
+[0;32mI (286) main_task: Returned from app_main()[0m
+0.000000
+0.621746
+1.204421
+1.711415
+2.110865
+2.377674
+2.495075
+2.455690
+2.261996
+1.926161
+1.469291
+0.920094
+0.313079
+-0.313607
+-0.920589
+-1.469722
+-1.926500
+-2.262222
+-2.455790
+-2.495041
+-2.377509
+-2.110579
+-1.711025
+-1.203953
+-0.621228
+0.000534
+0.622263
+1.204889
+1.711804
+2.111151
+2.377839
+2.495108
+2.455590
+2.261768
+1.925821
+1.468859
+0.919598
+0.312549
+-0.314137
+-0.921086
+-1.470154
+-1.926840
+-2.262450
+-2.455890
+-2.495008
+-2.377344
+-2.110293
+-1.710636
+-1.203485
+-0.620711
+0.001068
+0.622780
+1.205357
+1.712193
+2.111437
+2.378004
+2.495142
+2.455490
+2.261541
+1.925480
+1.468427
+0.919101
+0.312020
+-0.314667
+-0.921582
+-1.470586
+-1.927181
+-2.262677
+-2.455990
+-2.494974
+-2.377179
+-2.110007
+-1.710247
+-1.203017
+-0.620193
+0.001602
+0.623297
+1.205825
+1.712582
+2.111723
+2.378169
+2.495175
+2.455389
+2.261313
+1.925139
+1.467995
+0.918604
+0.311490
+-0.315197
+-0.922078
+-1.471018
+-1.927521
+-2.262904
+-2.456089
+-2.494940
+-2.377013
+-2.109720
+-1.709857
+-1.202548
+-0.619676
+0.002136
+0.623815
+1.206293
+1.712971
+2.112009
+2.378333
+2.495208
+2.455289
+2.261085
+1.924799
+1.467562
+0.918108
+0.310960
+-0.315726
+-0.922575
+-1.471449
+-1.927861
+-2.263131
+-2.456189
+-2.494906
+-2.376848
+-2.109434
+-1.709467
+-1.202080
+-0.619159
+0.002670
+0.624332
+1.206760
+1.713360
+2.112295
+2.378498
+2.495241
+2.455188
+2.260857
+1.924458
+1.467130
+0.917611
+0.310430
+-0.316256
+-0.923071
+-1.471881
+-1.928201
+-2.263357
+-2.456289
+-2.494872
+-2.376682
+-2.109147
+-1.709078
+-1.201612
+-0.618641
+0.003204
+0.624849
+1.207228
+1.713749
+2.112580
+2.378662
+2.495274
+2.455088
+2.260629
+1.924117
+1.466698
+0.917114
+0.309900
+-0.316786
+-0.923567
+-1.472313
+-1.928541
+-2.263584
+-2.456388
+-2.494838
+-2.376517
+-2.108860
+-1.708688
+-1.201144
+-0.618124
+0.003738
+0.625366
+1.207695
+1.714138
+2.112866
+2.378826
+2.495306
+2.454987
+2.260401
+1.923776
+1.466265
+0.916617
+0.309370
+-0.317316
+-0.924064
+-1.472744
+-1.928880
+-2.263811
+-2.456487
+-2.494803
+-2.376351
+-2.108573
+-1.708298
+-1.200675
+-0.617606
+0.004272
+0.625883
+1.208163
+1.714527
+2.113151
+2.378991
+2.495339
+2.454886
+2.260173
+1.923435
+1.465832
+0.916120
+0.308840
+-0.317845
+-0.924560
+-1.473176
+-1.929220
+-2.264037
+-2.456586
+-2.494769
+-2.376185
+-2.108286
+-1.707908
+-1.200207
+-0.617089
+0.004807
+0.626400
+1.208631
+1.714915
+2.113437
+2.379155
+2.495372
+2.454785
+2.259945
+1.923094
+1.465400
+0.915623
+0.308310
+-0.318375
+-0.925056
+-1.473607
+-1.929560
+-2.264264
+-2.456686
+-2.494734
+-2.376019
+-2.107999
+-1.707518
+-1.199738
+-0.616571
+0.005341
+0.626917
+1.209098
+1.715304
+2.113722
+2.379319
+2.495404
+2.454684
+2.259716
+1.922752
+1.464967
+0.915127
+0.307780
+-0.318905
+-0.925552
+-1.474039
+-1.929899
+-2.264490
+-2.456784
+-2.494699
+-2.375853
+-2.107712
+-1.707128
+-1.199270
+-0.616054
+0.005875
+0.627434
+1.209566
+1.715692
+2.114007
+2.379483
+2.495436
+2.454582
+2.259488
+1.922411
+1.464534
+0.914629
+0.307250
+-0.319435
+-0.926048
+-1.474470
+-1.930239
+-2.264716
+-2.456883
+-2.494665
+-2.375686
+-2.107425
+-1.706738
+-1.198801
+-0.615536
+0.006409
+0.627951
+1.210033
+1.716081
+2.114292
+2.379646
+2.495469
+2.454481
+2.259259
+1.922069
+1.464101
+0.914132
+0.306720
+-0.319964
+-0.926544
+-1.474901
+-1.930578
+-2.264943
+-2.456982
+-2.494630
+-2.375520
+-2.107137
+-1.706347
+-1.198332
+-0.615018
+0.006943
+0.628468
+1.210500
+1.716469
+2.114577
+2.379810
+2.495501
+2.454380
+2.259030
+1.921728
+1.463668
+0.913635
+0.306190
+-0.320494
+-0.927040
+-1.475332
+-1.930917
+-2.265169
+-2.457080
+-2.494595
+-2.375354
+-2.106850
+-1.705957
+-1.197864
+-0.614501
+0.007477
+0.628985
+1.210967
+1.716857
+2.114862
+2.379973
+2.495533
+2.454278
+2.258802
+1.921386
+1.463235
+0.913138
+0.305660
+-0.321024
+-0.927536
+-1.475763
+-1.931257
+-2.265395
+-2.457179
+-2.494560
+-2.375187
+-2.106562
+-1.705567
+-1.197395
+-0.613983
+0.008011
+0.629502
+1.211435
+1.717245
+2.115147
+2.380137
+2.495565
+2.454176
+2.258573
+1.921044
+1.462802
+0.912641
+0.305130
+-0.321553
+-0.928032
+-1.476195
+-1.931596
+-2.265620
+-2.457277
+-2.494524
+-2.375020
+-2.106275
+-1.705176
+-1.196926
+-0.613465
+0.008545
+0.630018
+1.211902
+1.717633
+2.115431
+2.380300
+2.495596
+2.454074
+2.258344
+1.920703
+1.462369
+0.912144
+0.304600
+-0.322083
+-0.928528
+-1.476625
+-1.931934
+-2.265846
+-2.457376
+-2.494489
+-2.374854
+-2.105987
+-1.704786
+-1.196457
+-0.612948
+0.009079
+0.630535
+1.212369
+1.718022
+2.115716
+2.380464
+2.495628
+2.453972
+2.258115
+1.920361
+1.461936
+0.911646
+0.304070
+-0.322612
+-0.929024
+-1.477057
+-1.932274
+-2.266072
+-2.457474
+-2.494453
+-2.374687
+-2.105699
+-1.704395
+-1.195988
+-0.612430
+0.009613
+0.631052
+1.212836
+1.718410
+2.116000
+2.380627
+2.495659
+2.453870
+2.257885
+1.920019
+1.461503
+0.911149
+0.303540
+-0.323142
+-0.929520
+-1.477487
+-1.932612
+-2.266297
+-2.457572
+-2.494418
+-2.374520
+-2.105411
+-1.704004
+-1.195519
+-0.611912
+0.010147
+0.631569
+1.213303
+1.718797
+2.116285
+2.380790
+2.495691
+2.453768
+2.257656
+1.919677
+1.461070
+0.910652
+0.303010
+-0.323672
+-0.930016
+-1.477918
+-1.932951
+-2.266523
+-2.457670
+-2.494382
+-2.374352
+-2.105123
+-1.703613
+-1.195050
+[1;31mE (5286) task_wdt: Task watchdog got triggered. The following tasks/users did not reset the watchdog in time:[0m
+[1;31mE (5286) task_wdt:  - IDLE1 (CPU 1)[0m
+[1;31mE (5286) task_wdt: Tasks currently running:[0m
+[1;31mE (5286) task_wdt: CPU 0: IDLE0[0m
+[1;31mE (5286) task_wdt: CPU 1: scheduler_task[0m
+[1;31mE (5286) task_wdt: Print CPU 1 backtrace[0m
+
+
+Backtrace: 0x400838B6:0x3FFB1800 0x40082C91:0x3FFB1820 0x4008625C:0x3FFB8EB0 0x400D59C4:0x3FFB8ED0 0x400DAD7D:0x3FFB92F0
+
+-0.611394
+0.010681
+0.632085
+1.213770
+1.719185
+2.116569
+2.380953
+2.495722
+2.453666
+2.257427
+1.919335
+1.460636
+0.910155
+0.302479
+-0.324201
+-0.930511
+-1.478349
+-1.933290
+-2.266748
+-2.457767
+-2.494346
+-2.374185
+-2.104835
+-1.703222
+-1.194581
+-0.610876
+0.011215
+0.632602
+1.214237
+1.719573
+2.116853
+2.381115
+2.495753
+2.453563
+2.257197
+1.918992
+1.460203
+0.909657
+0.301949
+-0.324731
+-0.931007
+-1.478779
+-1.933628
+-2.266973
+-2.457865
+-2.494310
+-2.374018
+-2.104547
+-1.702831
+-1.194112
+-0.610358
+0.011749
+0.633119
+1.214703
+1.719960
+2.117137
+2.381278
+2.495785
+2.453461
+2.256968
+1.918650
+1.459769
+0.909160
+0.301419
+-0.325260
+-0.931503
+-1.479210
+-1.933967
+-2.267198
+-2.457963
+-2.494274
+-2.373850
+-2.104259
+-1.702440
+-1.193642
+-0.609841
+0.012283
+0.633635
+1.215170
+1.720348
+2.117421
+2.381441
+2.495815
+2.453358
+2.256738
+1.918308
+1.459336
+0.908662
+0.300889
+-0.325790
+-0.931998
+-1.479640
+-1.934305
+-2.267423
+-2.458060
+-2.494238
+-2.373683
+-2.103970
+-1.702049
+-1.193173
+-0.609323
+0.012817
+0.634152
+1.215637
+1.720735
+2.117705
+2.381603
+2.495846
+2.453255
+2.256508
+1.917965
+1.458902
+0.908165
+0.300359
+-0.326319
+-0.932494
+-1.480071
+-1.934643
+-2.267648
+-2.458158
+-2.494202
+-2.373515
+-2.103682
+-1.701658
+-1.192704
+-0.608805
+0.013351
+0.634669
+1.216104
+1.721123
+2.117989
+2.381765
+2.495877
+2.453153
+2.256278
+1.917622
+1.458468
+0.907667
+0.299829
+-0.326849
+-0.932989
+-1.480501
+-1.934982
+-2.267873
+-2.458255
+-2.494165
+-2.373348
+-2.103393
+-1.701267
+-1.192235
+-0.608287
+0.013885
+0.635185
+1.216570
+1.721510
+2.118273
+2.381927
+2.495908
+2.453050
+2.256048
+1.917280
+1.458034
+0.907169
+0.299298
+-0.327378
+-0.933485
+-1.480932
+-1.935320
+-2.268098
+-2.458352
+-2.494129
+-2.373179
+-2.103104
+-1.700875
+-1.191765
+-0.607769
+0.014419
+0.635702
+1.217037
+1.721897
+2.118556
+2.382090
+2.495938
+2.452947
+2.255818
+1.916937
+1.457601
+0.906672
+0.298768
+-0.327908
+-0.933980
+-1.481362
+-1.935658
+-2.268322
+-2.458449
+-2.494092
+-2.373012
+-2.102816
+-1.700484
+-1.191296
+-0.607251
+0.014954
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0040,len:6272
+load:0x40078000,len:15848
+load:0x40080400,len:3920
+entry 0x40080644
+[0;32mI (27) boot: ESP-IDF v6.1-dev-2748-g490691bc61 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Apr  1 2026 02:22:53[0m
+[0;32mI (28) boot: Multicore bootloader[0m
+[0;32mI (30) boot: chip revision: v3.1[0m
+[0;32mI (33) boot.esp32: SPI Speed      : 40MHz[0m
+[0;32mI (37) boot.esp32: SPI Mode       : DIO[0m
+[0;32mI (40) boot.esp32: SPI Flash Size : 2MB[0m
+[0;32mI (44) boot: Enabling RNG early entropy source...[0m
+[0;32mI (49) boot: Partition Table:[0m
+[0;32mI (51) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (57) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (64) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (71) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (77) boot: End of partition table[0m
+[0;32mI (80) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=088f0h ( 35056) map[0m
+[0;32mI (100) esp_image: segment 1: paddr=00018918 vaddr=3ffb0000 size=029fch ( 10748) load[0m
+[0;32mI (105) esp_image: segment 2: paddr=0001b31c vaddr=40080000 size=04cfch ( 19708) load[0m
+[0;32mI (113) esp_image: segment 3: paddr=00020020 vaddr=400d0020 size=0ce08h ( 52744) map[0m
+[0;32mI (132) esp_image: segment 4: paddr=0002ce30 vaddr=40084cfc size=05e0ch ( 24076) load[0m
+[0;32mI (142) esp_image: segment 5: paddr=00032c44 vaddr=50000000 size=00028h (    40) load[0m
+[0;32mI (148) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (148) boot: Disabling RNG early entropy source...[0m
+[0;32mI (160) cpu_start: Multicore app[0m
+[0;32mI (169) cpu_start: GPIO 3 and 1 are used as console UART I/O pins[0m
+[0;32mI (169) cpu_start: Pro cpu start user code[0m
+[0;32mI (169) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (171) app_init: Application information:[0m
+[0;32mI (174) app_init: Project name:     esp32_audio_dsp[0m
+[0;32mI (179) app_init: App version:      daa39c8-dirty[0m
+[0;32mI (183) app_init: Compile time:     Apr  5 2026 02:00:47[0m
+[0;32mI (189) app_init: ELF file SHA256:  f05a1b4d8...[0m
+[0;32mI (193) app_init: ESP-IDF:          v6.1-dev-2748-g490691bc61[0m
+[0;32mI (198) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (202) efuse_init: Max chip rev:     v3.99 [0m
+[0;32mI (206) efuse_init: Chip rev:         v3.1[0m
+[0;32mI (210) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (216) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (221) heap_init: At 3FFB53D0 len 0002AC30 (171 KiB): DRAM[0m
+[0;32mI (227) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (232) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (238) heap_init: At 4008AB08 len 000154F8 (85 KiB): IRAM[0m
+[0;33mW (244) spi_flash: Detected boya flash chip but using generic driver. For optimal functionality, enable `SPI_FLASH_SUPPORT_BOYA_CHIP` in menuconfig[0m
+[0;32mI (256) spi_flash: detected chip: generic[0m
+[0;32mI (259) spi_flash: flash io: dio[0m
+[0;33mW (262) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (276) main_task: Started on CPU0[0m
+[0;32mI (286) main_task: Calling app_main()[0m
+=== NEW DSP PIPELINE STARTED ===
+[0;32mI (286) main_task: Returned from app_main()[0m
+0.000000
+0.621746
+1.204421
+1.711415
+2.110865
+2.377674
+2.495075
+2.455690
+2.261996
+1.926161
+1.469291
+0.920094
+0.313079
+-0.313607
+-0.920589
+-1.469722
+-1.926500
+-2.262222
+-2.455790
+-2.495041
+-2.377509
+-2.110579
+-1.711025
+-1.203953
+-0.621228
+0.000534
+0.622263
+1.204889
+1.711804
+2.111151
+2.377839
+2.495108
+2.455590
+2.261768
+1.925821
+1.468859
+0.919598
+0.312549
+-0.314137
+-0.921086
+-1.470154
+-1.926840
+-2.262450
+-2.455890
+-2.495008
+-2.377344
+-2.110293
+-1.710636
+-1.203485
+-0.620711
+0.001068
+0.622780
+1.205357
+1.712193
+2.111437
+2.378004
+2.495142
+2.455490
+2.261541
+1.925480
+1.468427
+0.919101
+0.312020
+-0.314667
+-0.921582
+-1.470586
+-1.927181
+-2.262677
+-2.455990
+-2.494974
+-2.377179
+-2.110007
+-1.710247
+-1.203017
+-0.620193
+0.001602
+0.623297
+1.205825
+1.712582
+2.111723
+2.378169
+2.495175
+2.455389
+2.261313
+1.925139
+1.467995
+0.918604
+0.311490
+-0.315197
+-0.922078
+-1.471018
+-1.927521
+-2.262904
+-2.456089
+-2.494940
+-2.377013
+-2.109720
+-1.709857
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0040,len:6272
+load:0x40078000,len:15848
+load:0x40080400,len:3920
+entry 0x40080644
+[0;32mI (27) boot: ESP-IDF v6.1-dev-2748-g490691bc61 2nd stage bootloader[0m
+[0;32mI (27) boot: compile time Apr  1 2026 02:22:53[0m
+[0;32mI (28) boot: Multicore bootloader[0m
+[0;32mI (30) boot: chip revision: v3.1[0m
+[0;32mI (33) boot.esp32: SPI Speed      : 40MHz[0m
+[0;32mI (37) boot.esp32: SPI Mode       : DIO[0m
+[0;32mI (40) boot.esp32: SPI Flash Size : 2MB[0m
+[0;32mI (44) boot: Enabling RNG early entropy source...[0m
+[0;32mI (49) boot: Partition Table:[0m
+[0;32mI (51) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (57) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (64) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (71) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (77) boot: End of partition table[0m
+[0;32mI (80) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=088f0h ( 35056) map[0m
+[0;32mI (100) esp_image: segment 1: paddr=00018918 vaddr=3ffb0000 size=029fch ( 10748) load[0m
+[0;32mI (105) esp_image: segment 2: paddr=0001b31c vaddr=40080000 size=04cfch ( 19708) load[0m
+[0;32mI (113) esp_image: segment 3: paddr=00020020 vaddr=400d0020 size=0ce08h ( 52744) map[0m
+[0;32mI (132) esp_image: segment 4: paddr=0002ce30 vaddr=40084cfc size=05e0ch ( 24076) load[0m
+[0;32mI (142) esp_image: segment 5: paddr=00032c44 vaddr=50000000 size=00028h (    40) load[0m
+[0;32mI (148) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (148) boot: Disabling RNG early entropy source...[0m
+[0;32mI (160) cpu_start: Multicore app[0m
+[0;32mI (169) cpu_start: GPIO 3 and 1 are used as console UART I/O pins[0m
+[0;32mI (169) cpu_start: Pro cpu start user code[0m
+[0;32mI (169) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (171) app_init: Application information:[0m
+[0;32mI (174) app_init: Project name:     esp32_audio_dsp[0m
+[0;32mI (179) app_init: App version:      daa39c8-dirty[0m
+[0;32mI (183) app_init: Compile time:     Apr  5 2026 02:00:47[0m
+[0;32mI (189) app_init: ELF file SHA256:  f05a1b4d8...[0m
+[0;32mI (193) app_init: ESP-IDF:          v6.1-dev-2748-g490691bc61[0m
+[0;32mI (198) efuse_init: Min chip rev:     v0.0[0m
+[0;32mI (202) efuse_init: Max chip rev:     v3.99 [0m
+[0;32mI (206) efuse_init: Chip rev:         v3.1[0m
+[0;32mI (210) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (216) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM[0m
+[0;32mI (221) heap_init: At 3FFB53D0 len 0002AC30 (171 KiB): DRAM[0m
+[0;32mI (227) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM[0m
+[0;32mI (232) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM[0m
+[0;32mI (238) heap_init: At 4008AB08 len 000154F8 (85 KiB): IRAM[0m
+[0;33mW (244) spi_flash: Detected boya flash chip but using generic driver. For optimal functionality, enable `SPI_FLASH_SUPPORT_BOYA_CHIP` in menuconfig[0m
+[0;32mI (256) spi_flash: detected chip: generic[0m
+[0;32mI (259) spi_flash: flash io: dio[0m
+[0;33mW (262) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.[0m
+[0;32mI (276) main_task: Started on CPU0[0m
+[0;32mI (286) main_task: Calling app_main()[0m
+=== NEW DSP PIPELINE STARTED ===
+[0;32mI (286) main_task: Returned from app_main()[0m
+0.000000
+0.621746
+1.204421
+1.711415
+2.110865
+2.377674
+2.495075
+2.455690
+2.261996
+1.926161
+1.469291
+0.920094
+0.313079
+-0.313607
+-0.920589
+-1.469722
+-1.926500
+-2.262222
+-2.455790
+-2.495041
+-2.377509
+-2.110579
+-1.711025
+-1.203953
+-0.621228
+0.000534
+0.622263
+1.204889
+1.711804
+2.111151
+2.377839
+2.495108
+2.455590
+2.261768
+1.925821
+1.468859
+0.919598
+0.312549
+-0.314137
+-0.921086
+-1.470154
+-1.926840
+-2.262450
+-2.455890
+-2.495008
+-2.377344
+-2.110293
+-1.710636
+-1.203485
+-0.620711
+0.001068
+0.622780
+1.205357
+1.712193
+2.111437
+2.378004
+2.495142
+2.455490
+2.261541
+1.925480
+1.468427
+0.919101
+0.312020
+-0.314667
+-0.921582
+-1.470586
+-1.927181
+-2.262677
+-2.455990
+-2.494974
+-2.377179
+-2.110007
+-1.710247
+-1.203017
+-0.620193
+0.001602
+0.623297
+1.205825
+1.712582
+2.111723
+2.378169
+2.495175
+2.455389
+2.261313
+1.925139
+1.467995
+0.918604
+0.311490
+-0.315197
+-0.922078
+-1.471018
+-1.927521
+-2.262904
+-2.456089
+-2.494940
+-2.377013
+-2.109720
+-1.709857
+-1.202548
+-0.619676
+0.002136
+0.623815
+1.206293
+1.712971
+2.112009
+2.378333
+2.495208
+2.455289
+2.261085
+1.924799
+1.467562
+0.918108
+0.310960
+-0.315726
+-0.922575
+-1.471449
+-1.927861
+-2.263131
+-2.456189
+-2.494906
+-2.376848
+-2.109434
+-1.709467�ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x3 (DOWNLOAD_BOOT(UART0/UART1/SDIO_REI_REO_V2))
+waiting for download
