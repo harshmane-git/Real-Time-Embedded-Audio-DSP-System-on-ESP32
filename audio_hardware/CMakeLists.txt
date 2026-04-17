@@ -1,9 +1,5 @@
-idf_component_register(
-    SRCS "main.c"
-         "mic.c"
-         "amp.c"
-         "ring_buffer.c"
-         "audio_pipeline.c"
-    INCLUDE_DIRS "."
-    REQUIRES driver
-)
+cmake_minimum_required(VERSION 3.16)
+
+include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+
+project(audio_hardware)
