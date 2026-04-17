@@ -1,7 +1,9 @@
 #include "audio_pipeline.h"
 #include "audio_config.h"
 #include "driver/gpio.h"
+#include "freertos/FreeRTOS.h"
 #include <stdio.h>
+#include <math.h>
 
 extern volatile int preset_request;
 

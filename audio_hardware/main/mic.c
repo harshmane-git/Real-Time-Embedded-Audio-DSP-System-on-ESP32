@@ -1,5 +1,6 @@
 #include "mic.h"
 #include "driver/i2s_std.h"
+#include "freertos/FreeRTOS.h"
 
 STATUS mic_Open(uint32_t *size)
 {
@@ -17,7 +18,7 @@ STATUS mic_Initialize(mic_hdl *hdl, const mic_config *cfg)
 
     i2s_std_config_t std_cfg = {
         .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(cfg->sample_rate),
-        .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_MONO),
+        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_MONO),
         .gpio_cfg = {
             .mclk = I2S_GPIO_UNUSED,
             .bclk = MIC_GPIO_BCLK,

@@ -1,5 +1,6 @@
 #include "amp.h"
 #include "driver/i2s_std.h"
+#include "freertos/FreeRTOS.h"
 
 STATUS amp_Open(uint32_t *size)
 {

@@ -63,7 +63,7 @@ static STATUS audio_apply_preset(int new_preset)
  * @param rb: Ring buffer handle
  * @return STATUS_OK if successful
  */
-static STATUS audio_reset_ring_buffer(rb_hdl *rb)
+/*static STATUS audio_reset_ring_buffer(rb_hdl *rb)
 {
     // Use API instead of directly manipulating internals
     STATUS status = rb_Reset(rb);
@@ -75,7 +75,7 @@ static STATUS audio_reset_ring_buffer(rb_hdl *rb)
     }
 
     return STATUS_OK;
-}
+}*/
 
 // ============================================================================
 // DSP Processing Layer
@@ -170,7 +170,7 @@ STATUS audio_Process(audio_hdl *hdl)
     // 🔹 Step 1: Mic input
     if (mic_Process(hdl->mic, mic_block, AUDIO_BLOCK_SIZE) != STATUS_OK)
     {
-        printf("[ERROR] Mic read failed at frame %u\n", frame_count);
+        printf("[ERROR] Mic read failed at frame %lu\n", frame_count);
         return STATUS_NOT_OK;
     }
 
@@ -200,7 +200,7 @@ STATUS audio_Process(audio_hdl *hdl)
 
         if ((frame_count % 100) == 0)
         {
-            printf("[WARN] RB underflow (total=%u)\n", rb_underflow_count);
+            printf("[WARN] RB underflow (total=%lu)\n", rb_underflow_count);
         }
     }
 
@@ -210,7 +210,7 @@ STATUS audio_Process(audio_hdl *hdl)
     // 🔹 Step 5: Output to amp
     if (amp_Process(hdl->amp, dsp_output_block, AUDIO_BLOCK_SIZE) != STATUS_OK)
     {
-        printf("[ERROR] Amp write failed at frame %u\n", frame_count);
+        printf("[ERROR] Amp write failed at frame %lu\n", frame_count);
         return STATUS_NOT_OK;
     }
 
@@ -237,7 +237,7 @@ STATUS audio_Close(audio_hdl *hdl)
     }
 
     printf("Audio pipeline closed\n");
-    printf("Frames: %u | RB underflows: %u | Preset changes: %u\n",
+    printf("Frames: %lu | RB underflows: %lu | Preset changes: %lu\n",
            frame_count, rb_underflow_count, preset_changes);
 
     return STATUS_OK;

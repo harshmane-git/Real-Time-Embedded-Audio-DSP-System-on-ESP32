@@ -5,5 +5,5 @@ idf_component_register(
          "ring_buffer.c"
          "audio_pipeline.c"
     INCLUDE_DIRS "."
-    REQUIRES driver esp_driver_i2s
+    REQUIRES driver esp_driver_gpio esp_driver_i2s 
 )
