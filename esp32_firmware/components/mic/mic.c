@@ -1,110 +1,64 @@
 #include "mic.h"
-#include "ring_buffer.h"
-//#include "driver/i2s.h"
+#include "driver/i2s_std.h"
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include <stdint.h>
-#include <math.h>
+#include "audio_config.h"
+#include "common_types.h"
 
-#define PI 3.14159265f
-#define FREQ 440.0f        // 440 Hz tone (A note)
-#define SAMPLE_RATE 16000.0f
-
-#define I2S_PORT    I2S_NUM_0
-#define TEST_FREQ 1000  // 1 kHz
-
-#define I2S_BCLK    26
-#define I2S_LRC     25
-#define I2S_DIN     33
-
-void mic_init(void)
-{ /*
-    i2s_config_t i2s_config = {
-        .mode                 = I2S_MODE_MASTER | I2S_MODE_RX,
-        .sample_rate          = SAMPLE_RATE,
-        .bits_per_sample      = I2S_BITS_PER_SAMPLE_32BIT,
-        .channel_format       = I2S_CHANNEL_FMT_ONLY_LEFT,
-        .communication_format = I2S_COMM_FORMAT_I2S,
-        .intr_alloc_flags     = 0,
-        .dma_buf_count        = 8,
-        .dma_buf_len          = 256,
-        .use_apll             = false,
-        .tx_desc_auto_clear   = false,
-        .fixed_mclk           = 0
-    };
-
-    i2s_pin_config_t pin_config = {
-        .bck_io_num   = I2S_BCLK,
-        .ws_io_num    = I2S_LRC,
-        .data_out_num = I2S_PIN_NO_CHANGE,
-        .data_in_num  = I2S_DIN
-    };
-
-    i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL);
-    i2s_set_pin(I2S_PORT, &pin_config);
-    i2s_zero_dma_buffer(I2S_PORT);
-    */
+STATUS mic_Open(uint32_t *size)
+{
+    *size = sizeof(mic_hdl);
+    return STATUS_OK;
 }
 
-/*void mic_task(void *arg)
+STATUS mic_Initialize(mic_hdl *hdl, const mic_config *cfg)
 {
-    ring_buffer_t *rb = (ring_buffer_t *)arg;
+    // 🔥 I2S CONFIG (RX)
+    i2s_chan_handle_t rx_handle;
 
-    int32_t raw_block[RB_SAMPLES_PER_SLOT];
-    float   float_block[RB_SAMPLES_PER_SLOT];
-    size_t  bytes_read;
+    i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(MIC_I2S_PORT, I2S_ROLE_MASTER);
+    i2s_new_channel(&chan_cfg, NULL, &rx_handle);
 
-    while (1)
-    {
-        i2s_read(I2S_PORT,
-                 raw_block,
-                 RB_SAMPLES_PER_SLOT * sizeof(int32_t),
-                 &bytes_read,
-                 portMAX_DELAY);
-
-        int samples_read = bytes_read / sizeof(int32_t);
-
-        for (int i = 0; i < samples_read; i++)
-        {
-            float_block[i] = ((float)(raw_block[i] >> 14) / 32768.0f) * 0.3f;
+    i2s_std_config_t std_cfg = {
+        .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(cfg->sample_rate),
+        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT, I2S_SLOT_MODE_MONO),
+        .gpio_cfg = {
+            .mclk = I2S_GPIO_UNUSED,
+            .bclk = MIC_GPIO_BCLK,
+            .ws = MIC_GPIO_WS,
+            .dout = I2S_GPIO_UNUSED,
+            .din = MIC_GPIO_DIN
         }
+    };
 
-        for (int i = samples_read; i < RB_SAMPLES_PER_SLOT; i++)
-        {
-            float_block[i] = 0.0f;
-        }
+    i2s_channel_init_std_mode(rx_handle, &std_cfg);
+    i2s_channel_enable(rx_handle);
 
-        if (!rb_write_block(rb, float_block))
-        {
-            // overflow → drop block (real-time safe)
-        }
-    }
-}*/
+    hdl->handle = rx_handle;
 
+    return STATUS_OK;
+}
 
-void mic_task(void *arg)
+STATUS mic_Process(mic_hdl *hdl, float *output, uint32_t samples)
 {
-    ring_buffer_t *rb = (ring_buffer_t *)arg;
+    static int32_t i2s_buffer[AUDIO_BLOCK_SIZE];
+    size_t bytes_read;
+    i2s_chan_handle_t rx_handle = hdl->handle;
 
-    float block[RB_SAMPLES_PER_SLOT];
+    i2s_channel_read(rx_handle, i2s_buffer, samples * sizeof(int32_t), &bytes_read, portMAX_DELAY);
 
-    static float phase = 0.0f;
-    float phase_inc = 2 * PI * FREQ / SAMPLE_RATE;
-
-    while (1)
+    for (uint32_t i = 0; i < samples; i++)
     {
-        for (int i = 0; i < RB_SAMPLES_PER_SLOT; i++)
-        {
-            block[i] = 0.5f * sinf(phase);   // amplitude 0.5
-
-            phase += phase_inc;
-            if (phase > 2 * PI)
-                phase -= 2 * PI;
-        }
-
-        rb_write_block(rb, block);
-
-        // simulate real-time (256 samples @ 16kHz ≈ 16ms)
-        vTaskDelay(pdMS_TO_TICKS(16));
+        // int32 → float32 normalization (no scaling)
+        output[i] = (float)i2s_buffer[i] / 2147483648.0f;
     }
+
+    return STATUS_OK;
+}
+
+STATUS mic_Close(mic_hdl *hdl)
+{
+    i2s_chan_handle_t rx_handle = hdl->handle;
+    i2s_channel_disable(rx_handle);
+    i2s_del_channel(rx_handle);
+    return STATUS_OK;
 }

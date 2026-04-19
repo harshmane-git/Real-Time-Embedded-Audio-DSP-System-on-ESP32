@@ -1,32 +1,42 @@
-#include <stdio.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "ring_buffer.h"
 #include "audio_pipeline.h"
-#include "scheduler.h"
-#include "mic.h"
+#include "audio_config.h"
+#include "driver/gpio.h"
+#include "freertos/FreeRTOS.h"
+#include <stdio.h>
+#include <math.h>
 
-// Global ring buffer
-ring_buffer_t rb;
+extern volatile int preset_request;
+
+void gpio_init_custom()
+{
+    gpio_set_direction(GPIO_SWITCH1, GPIO_MODE_INPUT);
+    gpio_set_direction(GPIO_SWITCH2, GPIO_MODE_INPUT);
+}
 
 void app_main(void)
 {
-    printf("=== NEW DSP PIPELINE STARTED ===\n");
+    mic_hdl mic;
+    mic_config cfg = {AUDIO_SAMPLE_RATE};
+    float block[AUDIO_BLOCK_SIZE];
 
-    rb_init(&rb);
+    mic_Initialize(&mic, &cfg);
 
-    // Init hardware (clean abstraction)
-    audio_init();
+    printf("Mic test started\n");
 
-    // Mic task (producer)
-    if (xTaskCreatePinnedToCore(mic_task, "mic_task", 4096, &rb, 6, NULL, 0) != pdPASS)
+    for (int frame = 0; frame < 100; frame++)
     {
-        printf("Failed to create mic_task\n");
+        mic_Process(&mic, block, AUDIO_BLOCK_SIZE);
+
+        // Find peak in this block
+        float peak = 0.0f;
+        for (int i = 0; i < AUDIO_BLOCK_SIZE; i++)
+        {
+            float abs_val = block[i] < 0 ? -block[i] : block[i];
+            if (abs_val > peak) peak = abs_val;
+        }
+
+        printf("Frame %3d | Peak: %.6f\n", frame, peak);
     }
 
-    // Scheduler task (consumer + DSP)
-    if (xTaskCreatePinnedToCore(scheduler_task, "scheduler_task", 4096, &rb, 5, NULL, 1) != pdPASS)
-    {
-        printf("Failed to create scheduler_task\n");
-    }
+    mic_Close(&mic);
 }
