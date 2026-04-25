@@ -29,7 +29,7 @@
 #define MIC_I2S_PORT            I2S_NUM_0
 #define MIC_GPIO_BCLK           26
 #define MIC_GPIO_WS             25
-#define MIC_GPIO_DIN            33
+#define MIC_GPIO_DIN            34  //earlier 33
 
 // I2S Configuration - Amplifier (TX)
 #define AMP_I2S_PORT            I2S_NUM_1
@@ -39,6 +39,6 @@
 
 // GPIO Configuration - Switches
 #define GPIO_SWITCH1            32
-#define GPIO_SWITCH2            34
+#define GPIO_SWITCH2            35 //earlier 34
 
 #endif
