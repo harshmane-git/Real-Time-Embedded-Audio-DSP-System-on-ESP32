@@ -2,43 +2,97 @@
 #define AUDIO_CONFIG_H
 
 // ============================================================================
-// Audio Pipeline Configuration - Centralized Parameters
-// ============================================================================
-
 // Audio Processing Parameters
+// ============================================================================
 #define AUDIO_SAMPLE_RATE           16000
 #define AUDIO_BLOCK_SIZE            256
 
-// Ring Buffer
-// 4 slots × 256 samples = 1024 samples = 64ms @ 16kHz
+// ============================================================================
+// Ring Buffer  —  4 slots × 256 = 1024 samples = 64ms @ 16kHz
+// ============================================================================
 #define AUDIO_RB_SLOTS              4
 #define AUDIO_RB_SAMPLES_PER_SLOT   256
-#define AUDIO_RB_SIZE               (AUDIO_RB_SLOTS * AUDIO_RB_SAMPLES_PER_SLOT)  // 1024
+#define AUDIO_RB_SIZE               (AUDIO_RB_SLOTS * AUDIO_RB_SAMPLES_PER_SLOT)
 
-// DSP Configuration - Presets
-#define NUM_PRESETS             3
-#define PRESET_GAIN_0           1.0f
-#define PRESET_GAIN_1           0.5f
-#define PRESET_GAIN_2           2.0f
+// ============================================================================
+// Hardcoded biquad coefficients for LP+BP+HP (always ON, never switched)
+// These sit BEFORE the EQ in the signal chain.
+// LP @ 800 Hz, BP @ 1000 Hz Q=0.7, HP @ 80 Hz  —  all at 16 kHz
+// Each filter = 2 cascaded biquad stages {b0,b1,b2,a1,a2}
+// ============================================================================
+#define BIQUAD_LP_S1  { +0.02008282f, +0.04016564f, +0.02008282f, -1.56097580f, +0.64130708f }
+#define BIQUAD_LP_S2  { +0.02008282f, +0.04016564f, +0.02008282f, -1.56097580f, +0.64130708f }
+#define BIQUAD_BP_S1  { +0.15026695f, +0.00000000f, -0.15026695f, -1.45110604f, +0.57066586f }
+#define BIQUAD_BP_S2  { +0.15026695f, +0.00000000f, -0.15026695f, -1.45110604f, +0.57066586f }
+#define BIQUAD_HP_S1  { +0.97802727f, -1.95605454f, +0.97802727f, -1.95557182f, +0.95653726f }
+#define BIQUAD_HP_S2  { +0.97802727f, -1.95605454f, +0.97802727f, -1.95557182f, +0.95653726f }
 
-// Bounds checking
-#define PRESET_MIN              0
-#define PRESET_MAX              (NUM_PRESETS - 1)
+// ============================================================================
+// EQ presets  —  4 presets, cycled by SW1
+// Each preset sets bass (LP), mid (BP), treble (HP) coefficients
+// Preset 0: Flat      Preset 1: Bass    Preset 2: Mid     Preset 3: Treble
+// ============================================================================
+#define EQ_NUM_PRESETS      4
 
-// I2S Configuration - Microphone (RX)
+// Preset 0 — Flat (wide LP, centred BP, very low HP cutoff)
+#define EQ0_LP_S1  { +0.75705202f, +1.51410405f, +0.75705202f, +1.45419681f, +0.57401129f }
+#define EQ0_LP_S2  { +0.75705202f, +1.51410405f, +0.75705202f, +1.45419681f, +0.57401129f }
+#define EQ0_BP_S1  { +0.15026695f, +0.00000000f, -0.15026695f, -1.45110604f, +0.57066586f }
+#define EQ0_BP_S2  { +0.15026695f, +0.00000000f, -0.15026695f, -1.45110604f, +0.57066586f }
+#define EQ0_HP_S1  { +0.97802727f, -1.95605454f, +0.97802727f, -1.95557182f, +0.95653726f }
+#define EQ0_HP_S2  { +0.97802727f, -1.95605454f, +0.97802727f, -1.95557182f, +0.95653726f }
+
+// Preset 1 — Bass boost (LP @ 400 Hz, BP @ 200 Hz, HP @ 60 Hz)
+#define EQ1_LP_S1  { +0.00554263f, +0.01108527f, +0.00554263f, -1.77860502f, +0.80077556f }
+#define EQ1_LP_S2  { +0.00554263f, +0.01108527f, +0.00554263f, -1.77860502f, +0.80077556f }
+#define EQ1_BP_S1  { +0.03822972f, +0.00000000f, -0.03822972f, -1.94301883f, +0.94902703f }
+#define EQ1_BP_S2  { +0.03822972f, +0.00000000f, -0.03822972f, -1.94301883f, +0.94902703f }
+#define EQ1_HP_S1  { +0.98347477f, -1.96694954f, +0.98347477f, -1.96667652f, +0.96722256f }
+#define EQ1_HP_S2  { +0.98347477f, -1.96694954f, +0.98347477f, -1.96667652f, +0.96722256f }
+
+// Preset 2 — Mid boost (LP @ 3000 Hz, BP @ 1500 Hz, HP @ 300 Hz)
+#define EQ2_LP_S1  { +0.18668319f, +0.37336638f, +0.18668319f, -0.46291040f, +0.20964317f }
+#define EQ2_LP_S2  { +0.18668319f, +0.37336638f, +0.18668319f, -0.46291040f, +0.20964317f }
+#define EQ2_BP_S1  { +0.23438022f, +0.00000000f, -0.23438022f, -1.40309918f, +0.68749303f }
+#define EQ2_BP_S2  { +0.23438022f, +0.00000000f, -0.23438022f, -1.40309918f, +0.68749303f }
+#define EQ2_HP_S1  { +0.92005550f, -1.84011099f, +0.92005550f, -1.83371141f, +0.84651057f }
+#define EQ2_HP_S2  { +0.92005550f, -1.84011099f, +0.92005550f, -1.83371141f, +0.84651057f }
+
+// Preset 3 — Treble boost (LP @ 7000 Hz, BP @ 5000 Hz, HP @ 2000 Hz)
+#define EQ3_LP_S1  { +0.75705202f, +1.51410405f, +0.75705202f, +1.45419681f, +0.57401129f }
+#define EQ3_LP_S2  { +0.75705202f, +1.51410405f, +0.75705202f, +1.45419681f, +0.57401129f }
+#define EQ3_BP_S1  { +0.35317580f, +0.00000000f, -0.35317580f, +0.58516083f, +0.52909893f }
+#define EQ3_BP_S2  { +0.35317580f, +0.00000000f, -0.35317580f, +0.58516083f, +0.52909893f }
+#define EQ3_HP_S1  { +0.56900695f, -1.13801389f, +0.56900695f, -0.94276158f, +0.33326621f }
+#define EQ3_HP_S2  { +0.56900695f, -1.13801389f, +0.56900695f, -0.94276158f, +0.33326621f }
+
+// ============================================================================
+// Gain array  —  cycled by SW2, wraps at end
+// ============================================================================
+#define GAIN_STEPS              4
+#define GAIN_ARRAY              { 0.5f, 1.0f, 1.5f, 2.0f }
+
+// ============================================================================
+// I2S — Microphone (RX)
+// ============================================================================
 #define MIC_I2S_PORT            I2S_NUM_0
 #define MIC_GPIO_BCLK           26
 #define MIC_GPIO_WS             25
-#define MIC_GPIO_DIN            34  //earlier 33
+#define MIC_GPIO_DIN            34      // soldered
 
-// I2S Configuration - Amplifier (TX)
+// ============================================================================
+// I2S — Amplifier (TX)
+// ============================================================================
 #define AMP_I2S_PORT            I2S_NUM_1
 #define AMP_GPIO_BCLK           27
 #define AMP_GPIO_WS             14
 #define AMP_GPIO_DOUT           22
 
-// GPIO Configuration - Switches
-#define GPIO_SWITCH1            32
-#define GPIO_SWITCH2            35 //earlier 34
+// ============================================================================
+// GPIO — Switches (active-low, internal pull-up)
+// ============================================================================
+#define GPIO_SWITCH1            13      // EQ preset cycle 
+#define GPIO_SWITCH2            33      // Gain cycle
+#define GPIO_SWITCH3            32      // Delay (passthrough for now)
 
 #endif

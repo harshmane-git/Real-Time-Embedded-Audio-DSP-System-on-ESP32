@@ -5,6 +5,7 @@ set(EXTRA_COMPONENT_DIRS
     ../C_implementation/high_pass
     ../C_implementation/Band_Pass
     ../C_implementation/biquad
+    ../C_implementation/equalizer
 )
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(esp32_audio_DSP)
