@@ -91,7 +91,7 @@
 // ============================================================================
 // GPIO — Switches (active-low, internal pull-up)
 // ============================================================================
-#define GPIO_SWITCH1            13      // EQ preset cycle 
+#define GPIO_SWITCH1            19      // EQ preset cycle 
 #define GPIO_SWITCH2            33      // Gain cycle
 #define GPIO_SWITCH3            32      // Delay (passthrough for now)
 

@@ -44,7 +44,12 @@ STATUS mic_Process(mic_hdl *hdl, float *output, uint32_t samples)
     size_t bytes_read;
     i2s_chan_handle_t rx_handle = hdl->handle;
 
-    i2s_channel_read(rx_handle, i2s_buffer, samples * sizeof(int32_t), &bytes_read, portMAX_DELAY);
+    i2s_channel_read(rx_handle, 
+                    i2s_buffer, 
+                    samples * sizeof(int32_t), 
+                    &bytes_read, 
+                    pdMS_TO_TICKS(100)
+                );
 
     for (uint32_t i = 0; i < samples; i++)
     {

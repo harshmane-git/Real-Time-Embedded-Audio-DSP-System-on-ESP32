@@ -58,7 +58,7 @@ STATUS amp_Process(amp_hdl *hdl, const float *input, uint32_t samples)
                       i2s_tx_buffer,
                       samples * sizeof(int32_t),
                       &bytes_written,
-                      portMAX_DELAY);
+                      pdMS_TO_TICKS(100));
 
     return STATUS_OK;
 }
