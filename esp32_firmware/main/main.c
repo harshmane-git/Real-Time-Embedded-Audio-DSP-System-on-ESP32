@@ -4,6 +4,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
+#include "esp_err.h"
 #include <stdio.h>
 
 // Shared with audio_pipeline.c
@@ -30,7 +31,12 @@ static void gpio_init_switches(void)
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type    = GPIO_INTR_DISABLE,
     };
-    gpio_config(&io_cfg);
+    esp_err_t err = gpio_config(&io_cfg);
+    printf("[GPIO] gpio_config returned: %d (0=OK)\\n", err);
+    printf("[GPIO] SW1=%d SW2=%d SW3=%d\\n",
+           gpio_get_level(GPIO_SWITCH1),
+           gpio_get_level(GPIO_SWITCH2),
+           gpio_get_level(GPIO_SWITCH3));
 }
 
 void app_main(void)
