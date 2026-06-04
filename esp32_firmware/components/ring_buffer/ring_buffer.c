@@ -45,7 +45,7 @@ STATUS rb_Reset(rb_hdl *hdl)
 
 STATUS rb_Process(rb_hdl *hdl, const float *input, float *output, uint32_t samples)
 {
-    if (hdl == NULL || input == NULL || output == NULL) return STATUS_NOT_OK;
+    //if (hdl == NULL || input == NULL || output == NULL) return STATUS_NOT_OK;
 
     // Write new samples — overwrite oldest if full (streaming, non-blocking)
     for (uint32_t i = 0; i < samples; i++)

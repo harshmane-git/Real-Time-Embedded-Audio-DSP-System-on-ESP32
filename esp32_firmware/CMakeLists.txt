@@ -8,6 +8,7 @@ set(EXTRA_COMPONENT_DIRS
     ../C_implementation/equalizer
     ../C_implementation/delay
     ../C_implementation/gain
+    ../C_implementation/limiter
 )
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-error=unused-variable -Wno-error=unused-const-variable")
