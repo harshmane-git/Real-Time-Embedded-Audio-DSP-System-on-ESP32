@@ -1,7 +1,6 @@
 /* ========================= equalizer.c ========================= */
 
 #include "equalizer.h"
-#include <stddef.h>
 
 STATUS equalizer_open(uint32_t *pui32Size)
 {
@@ -15,13 +14,17 @@ STATUS equalizer_open(uint32_t *pui32Size)
 STATUS equalizer_init(equalizer_hdl_t *phdl,
                       const equalizer_config_t *psConfig)
 {
-    /* psConfig must be static/heap to avoid stack overflow on ESP32 */
     if (phdl == NULL || psConfig == NULL)
         return STATUS_NOT_OK;
 
-    low_pass_init(&phdl->low_hdl, &psConfig->low);
-    band_pass_init(&phdl->mid_hdl, &psConfig->mid);
-    high_pass_init(&phdl->high_hdl, &psConfig->high);
+    low_pass_init(&phdl->low_hdl,
+                  &psConfig->low);
+
+    band_pass_init(&phdl->mid_hdl,
+                   &psConfig->mid);
+
+    high_pass_init(&phdl->high_hdl,
+                   &psConfig->high);
 
     return STATUS_OK;
 }
@@ -33,15 +36,29 @@ STATUS equalizer_process(equalizer_hdl_t *phdl,
                          float *pfHigh,
                          uint32_t ui32NumSamples)
 {
-    /* Bug 5 Fix: NULL checks for all parallel processing bands */
-    if (phdl == NULL || pfInput == NULL || pfLow == NULL || pfMid == NULL || pfHigh == NULL)
+    if (phdl == NULL ||
+        pfInput == NULL ||
+        pfLow == NULL ||
+        pfMid == NULL ||
+        pfHigh == NULL)
     {
         return STATUS_NOT_OK;
     }
 
-    low_pass_process(&phdl->low_hdl, pfInput, pfLow, ui32NumSamples);
-    band_pass_process(&phdl->mid_hdl, pfInput, pfMid, ui32NumSamples);
-    high_pass_process(&phdl->high_hdl, pfInput, pfHigh, ui32NumSamples);
+    low_pass_process(&phdl->low_hdl,
+                     pfInput,
+                     pfLow,
+                     ui32NumSamples);
+
+    band_pass_process(&phdl->mid_hdl,
+                      pfInput,
+                      pfMid,
+                      ui32NumSamples);
+
+    high_pass_process(&phdl->high_hdl,
+                      pfInput,
+                      pfHigh,
+                      ui32NumSamples);
 
     return STATUS_OK;
 }

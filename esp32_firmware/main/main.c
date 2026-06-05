@@ -31,25 +31,23 @@ static void gpio_init_switches(void)
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
         .intr_type    = GPIO_INTR_DISABLE,
     };
-    esp_err_t err = gpio_config(&io_cfg);
-    printf("[GPIO] gpio_config returned: %d (0=OK)\\n", err);
-    printf("[GPIO] SW1=%d SW2=%d SW3=%d\\n",
-           gpio_get_level(GPIO_SWITCH1),
-           gpio_get_level(GPIO_SWITCH2),
-           gpio_get_level(GPIO_SWITCH3));
+    gpio_config(&io_cfg);
 }
 
 void app_main(void)
 {
+    // Initialize the input switch configuration
     gpio_init_switches();
 
     audio_hdl hdl;
 
+    // Open structural resource descriptors
     if (audio_Open(&hdl) != STATUS_OK)
     {
         return;
     }
 
+    // Initialize all active hardware drivers and filter blocks
     if (audio_Initialize(&hdl) != STATUS_OK)
     {
         return;
@@ -58,7 +56,7 @@ void app_main(void)
     int prev_sw1 = 1, prev_sw2 = 1, prev_sw3 = 1;
     int gain_step = 1;
 
-    // Debounce timestamps
+    // Edge tracking debounce timers
     TickType_t last_sw1 = 0, last_sw2 = 0, last_sw3 = 0;
     const TickType_t DEBOUNCE = pdMS_TO_TICKS(200);
 
@@ -66,35 +64,33 @@ void app_main(void)
     {
         TickType_t now = xTaskGetTickCount();
 
+        // Sample current hardware signal levels
         int s1 = gpio_get_level(GPIO_SWITCH1);
         int s2 = gpio_get_level(GPIO_SWITCH2);
         int s3 = gpio_get_level(GPIO_SWITCH3);
 
-        // FIX 2: Throttled down to 100 iterations (~1.6 seconds) for interactive visibility
-        static uint32_t dbg_count = 0;
-        if (++dbg_count % 100 == 0)
-        {
-           printf("[DBG] SW1=%d SW2=%d SW3=%d\n", s1, s2, s3);
-        }
+        // ====================================================================
+        // INTERACTIVE ASYNCHRONOUS EVENT PROCESSING
+        // ====================================================================
 
-        // SW1 — EQ preset cycle (falling edge + debounce)
+        // SW1 — Equalizer Preset Cycling (Falling edge + Debounce)
         if (prev_sw1 == 1 && s1 == 0 && (now - last_sw1) > DEBOUNCE)
         {
             last_sw1          = now;
             eq_preset_pending = (eq_preset + 1) % EQ_NUM_PRESETS;
-            printf("[SW1] EQ preset → %d\n", eq_preset_pending);
+            printf("[SW1] EQ preset -> %d\n", eq_preset_pending);
         }
 
-        // SW2 — Gain cycle (falling edge + debounce)
+        // SW2 — Master Gain Regulation Cycling (Falling edge + Debounce)
         if (prev_sw2 == 1 && s2 == 0 && (now - last_sw2) > DEBOUNCE)
         {
             last_sw2  = now;
             gain_step = (gain_step + 1) % GAIN_STEPS;
             audio_set_gain(gain_step);
-            printf("[SW2] Gain step → %d\n", gain_step);
+            printf("[SW2] Gain step -> %d\n", gain_step);
         }
 
-        // SW3 — Delay toggle (falling edge + debounce)
+        // SW3 — Feedback Delay Line Activation (Falling edge + Debounce)
         if (prev_sw3 == 1 && s3 == 0 && (now - last_sw3) > DEBOUNCE)
         {
             last_sw3 = now;
@@ -102,16 +98,15 @@ void app_main(void)
             printf("[SW3] Delay toggled\n");
         }
 
+        // Archive state history for next sample comparison
         prev_sw1 = s1;
         prev_sw2 = s2;
         prev_sw3 = s3;
 
-        // Apply pending EQ preset BEFORE audio block — block boundary safe zone [cite: 1324]
+        // Apply pending filter changes safely at block boundaries
         audio_apply_pending();
 
-        // Process one audio block — Natively blocks for 16ms via I2S DMA [cite: 773, 774]
+        // Process a block of data — naturally blocks task execution for 16ms via I2S DMA
         audio_Process(&hdl);
-
-        // FIX 1: Removed vTaskDelay(1) to stop dropping edge detection samples!
     }
 }

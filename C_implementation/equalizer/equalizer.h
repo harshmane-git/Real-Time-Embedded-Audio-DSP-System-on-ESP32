@@ -1,17 +1,33 @@
+/* ========================= equalizer.h ========================= */
+
 #ifndef EQUALIZER_H
 #define EQUALIZER_H
 
 #include <stdint.h>
 #include "common_types.h"
-/* ... existing includes ... */
+#include "low_pass.h"
+#include "band_pass.h"
+#include "high_pass.h"
 
-/* IMPORTANT: psConfig must be static or heap-allocated. 
-   Do NOT pass a stack-allocated equalizer_config_t on ESP32. */
+typedef struct
+{
+    low_pass_config_t  low;
+    band_pass_config_t mid;
+    high_pass_config_t high;
+} equalizer_config_t;
+
+typedef struct
+{
+    low_pass_hdl_t  low_hdl;
+    band_pass_hdl_t mid_hdl;
+    high_pass_hdl_t high_hdl;
+} equalizer_hdl_t;
+
+STATUS equalizer_open(uint32_t *pui32Size);
+
 STATUS equalizer_init(equalizer_hdl_t *phdl,
                       const equalizer_config_t *psConfig);
 
-/* NOTE: This component is non-reentrant due to internal static buffers.
-   It MUST be called from a single audio processing task only. */
 STATUS equalizer_process(equalizer_hdl_t *phdl,
                          const float *pfInput,
                          float *pfLow,
@@ -19,7 +35,6 @@ STATUS equalizer_process(equalizer_hdl_t *phdl,
                          float *pfHigh,
                          uint32_t ui32NumSamples);
 
-/* NOTE: Update this if dynamic memory is added to nested handles in the future. */
 STATUS equalizer_close(equalizer_hdl_t *phdl);
 
 #endif
