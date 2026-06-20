@@ -38,30 +38,48 @@ int main(void)
        printf("Failed to load configuration\n");
        return -1;
     }
+
+    printf("\n===== CONFIG LOADED =====\n");
+
+printf("ENABLE_EQ         : %d\n", config.enable_eq);
+printf("ENABLE_DELAY      : %d\n", config.enable_delay);
+printf("ENABLE_LIMITER    : %d\n", config.enable_limiter);
+
+printf("GLOBAL_GAIN_DB    : %.2f\n", config.global_gain_db);
+
+printf("LOW_GAIN_DB       : %.2f\n", config.low_gain_db);
+printf("MID_GAIN_DB       : %.2f\n", config.mid_gain_db);
+printf("HIGH_GAIN_DB      : %.2f\n", config.high_gain_db);
+
+printf("DELAY_SECONDS     : %.3f\n", config.delay_seconds);
+printf("LIMITER_THRESHOLD : %.2f\n", config.limiter_threshold);
+
+printf("=========================\n\n");
     
     /* ====================== CONFIGURATION ====================== */
 
-    bool enable_bypass = false;
-    bool enable_mute   = false;
+bool enable_bypass = false;
+bool enable_mute   = false;
+bool enable_gain   = false;
 
-    bool  enable_gain        = false;
-    float global_gain_linear = 2.0f;
+/* Loaded from encrypted config.bin */
 
-    bool enable_eq = true;
+bool enable_eq = config.enable_eq;
 
-    bool  enable_delay  = true;
-    float delay_seconds = 0.25f;
+bool enable_delay = config.enable_delay;
+float delay_seconds = config.delay_seconds;
 
-    bool  enable_limiter    = false;
-    float limiter_threshold = 0.9f;
+bool enable_limiter = config.enable_limiter;
+float limiter_threshold = config.limiter_threshold;
 
-    /* EQ gains now handled by gain block */
-    eq_gain_config_t eq_gain_cfg =
-    {
-        .low_gain_db  = -2.0f,
-        .mid_gain_db  = 3.0f,
-        .high_gain_db = 1.0f
-    };
+/* EQ gains loaded from encrypted config.bin */
+
+eq_gain_config_t eq_gain_cfg =
+{
+    .low_gain_db  = config.low_gain_db,
+    .mid_gain_db  = config.mid_gain_db,
+    .high_gain_db = config.high_gain_db
+};
 
     /* ====================== COEFFICIENTS ====================== */
 
@@ -72,9 +90,10 @@ int main(void)
         .high = hp_config
     };
 
-    gain_config_t gain_config = {
-        .gain_db = 6.0f
-    };
+    gain_config_t gain_config =
+{
+    .gain_db = config.global_gain_db
+};
 
     delay_config_t delay_config = {
         .delay_seconds = delay_seconds
