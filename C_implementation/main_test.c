@@ -30,6 +30,15 @@ high_pass_config_t hp_config = {
 
 int main(void)
 {
+
+    audio_config_t config;
+
+    if(config_load(&config) != 0)
+    {
+       printf("Failed to load configuration\n");
+       return -1;
+    }
+    
     /* ====================== CONFIGURATION ====================== */
 
     bool enable_bypass = false;
