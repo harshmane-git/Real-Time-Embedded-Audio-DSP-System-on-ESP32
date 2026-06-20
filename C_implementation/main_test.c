@@ -8,6 +8,8 @@
 #include "delay.h"
 #include "limiter.h"
 #include "equalizer.h"
+#include "audio_config.h"
+#include "config_loader.h"
 
 #define BLOCK_SIZE 256
 
