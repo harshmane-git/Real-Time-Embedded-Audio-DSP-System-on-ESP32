@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <sndfile.h>
 #include <stdbool.h>
 #include "common_types.h"
 #include "low_pass.h"
@@ -8,80 +9,57 @@
 #include "delay.h"
 #include "limiter.h"
 #include "equalizer.h"
-#include "audio_config.h"
-#include "config_loader.h"
 
 #define BLOCK_SIZE 256
 
-low_pass_config_t lp_config = {
-    .s1 = {0.00312629f,0.00625258f,0.00312629f,-1.79158896f,0.80409412f},
-    .s2 = {0.00331660f,0.00663319f,0.00331660f,-1.90064888f,0.91391527f}
-};
-
-band_pass_config_t bp_config = {
-    .s1 = {0.12491506f,0.00000000f,-0.12491506f,-1.66451047f,0.75016988f},
-    .s2 = {0.05582542f,0.00000000f,-0.05582542f,-1.79592677f,0.88834915f}
-};
-
-high_pass_config_t hp_config = {
-    .s1 = {0.51627979f,-1.03255959f,0.51627979f,-0.85540037f,0.20971880f},
-    .s2 = {0.67177700f,-1.34355400f,0.67177700f,-1.11303657f,0.57407142f}
-};
-
 int main(void)
 {
+    const char *input_file =
+        "C:/Users/Umesh/Downloads/Recording.wav";
 
-    audio_config_t config;
+    const char *output_file =
+        "C:/Users/Umesh/Downloads/final_test1.wav";
 
-    if(config_load(&config) != 0)
-    {
-       printf("Failed to load configuration\n");
-       return -1;
-    }
-
-    printf("\n===== CONFIG LOADED =====\n");
-
-printf("ENABLE_EQ         : %d\n", config.enable_eq);
-printf("ENABLE_DELAY      : %d\n", config.enable_delay);
-printf("ENABLE_LIMITER    : %d\n", config.enable_limiter);
-
-printf("GLOBAL_GAIN_DB    : %.2f\n", config.global_gain_db);
-
-printf("LOW_GAIN_DB       : %.2f\n", config.low_gain_db);
-printf("MID_GAIN_DB       : %.2f\n", config.mid_gain_db);
-printf("HIGH_GAIN_DB      : %.2f\n", config.high_gain_db);
-
-printf("DELAY_SECONDS     : %.3f\n", config.delay_seconds);
-printf("LIMITER_THRESHOLD : %.2f\n", config.limiter_threshold);
-
-printf("=========================\n\n");
-    
     /* ====================== CONFIGURATION ====================== */
 
-bool enable_bypass = false;
-bool enable_mute   = false;
-bool enable_gain   = false;
+    bool enable_bypass = false;
+    bool enable_mute   = false;
 
-/* Loaded from encrypted config.bin */
+    bool  enable_gain        = false;
+    float global_gain_linear = 2.0f;
 
-bool enable_eq = config.enable_eq;
+    bool enable_eq = true;
 
-bool enable_delay = config.enable_delay;
-float delay_seconds = config.delay_seconds;
+    bool  enable_delay  = true;
+    float delay_seconds = 0.25f;
 
-bool enable_limiter = config.enable_limiter;
-float limiter_threshold = config.limiter_threshold;
+    bool  enable_limiter    = false;
+    float limiter_threshold = 0.9f;
 
-/* EQ gains loaded from encrypted config.bin */
-
-eq_gain_config_t eq_gain_cfg =
-{
-    .low_gain_db  = config.low_gain_db,
-    .mid_gain_db  = config.mid_gain_db,
-    .high_gain_db = config.high_gain_db
-};
+    /* EQ gains now handled by gain block */
+    eq_gain_config_t eq_gain_cfg =
+    {
+        .low_gain_db  = -2.0f,
+        .mid_gain_db  = 3.0f,
+        .high_gain_db = 1.0f
+    };
 
     /* ====================== COEFFICIENTS ====================== */
+
+    low_pass_config_t lp_config = {
+        .s1 = {0.00312629f,0.00625258f,0.00312629f,-1.79158896f,0.80409412f},
+        .s2 = {0.00331660f,0.00663319f,0.00331660f,-1.90064888f,0.91391527f}
+    };
+
+    band_pass_config_t bp_config = {
+        .s1 = {0.12491506f,0.00000000f,-0.12491506f,-1.66451047f,0.75016988f},
+        .s2 = {0.05582542f,0.00000000f,-0.05582542f,-1.79592677f,0.88834915f}
+    };
+
+    high_pass_config_t hp_config = {
+        .s1 = {0.51627979f,-1.03255959f,0.51627979f,-0.85540037f,0.20971880f},
+        .s2 = {0.67177700f,-1.34355400f,0.67177700f,-1.11303657f,0.57407142f}
+    };
 
     equalizer_config_t eq_config =
     {
@@ -90,10 +68,9 @@ eq_gain_config_t eq_gain_cfg =
         .high = hp_config
     };
 
-    gain_config_t gain_config =
-{
-    .gain_db = config.global_gain_db
-};
+    gain_config_t gain_config = {
+        .gain_db = 6.0f
+    };
 
     delay_config_t delay_config = {
         .delay_seconds = delay_seconds
@@ -147,13 +124,49 @@ eq_gain_config_t eq_gain_cfg =
     /* ====================== STATUS ====================== */
 
     printf("\n=== Module Initialization Status ===\n");
-    printf("Low Pass   : %s\n", (st_lp == STATUS_OK) ? "SUCCESS" : "FAILED");
-    printf("Band Pass  : %s\n", (st_bp == STATUS_OK) ? "SUCCESS" : "FAILED");
-    printf("High Pass  : %s\n", (st_hp == STATUS_OK) ? "SUCCESS" : "FAILED");
-    printf("Gain       : %s\n", (st_gn == STATUS_OK) ? "SUCCESS" : "FAILED");
-    printf("Delay      : %s\n", (st_dl == STATUS_OK) ? "SUCCESS" : "FAILED");
-    printf("Limiter    : %s\n", (st_lm == STATUS_OK) ? "SUCCESS" : "FAILED");
+
+    printf("Low Pass   : %s\n",
+           (st_lp == STATUS_OK) ? "SUCCESS" : "FAILED");
+
+    printf("Band Pass  : %s\n",
+           (st_bp == STATUS_OK) ? "SUCCESS" : "FAILED");
+
+    printf("High Pass  : %s\n",
+           (st_hp == STATUS_OK) ? "SUCCESS" : "FAILED");
+
+    printf("Gain       : %s\n",
+           (st_gn == STATUS_OK) ? "SUCCESS" : "FAILED");
+
+    printf("Delay      : %s\n",
+           (st_dl == STATUS_OK) ? "SUCCESS" : "FAILED");
+
+    printf("Limiter    : %s\n",
+           (st_lm == STATUS_OK) ? "SUCCESS" : "FAILED");
+
     printf("====================================\n\n");
+
+    /* ====================== FILE OPEN ====================== */
+
+    SF_INFO sfinfo = {0};
+
+    SNDFILE *infile =
+        sf_open(input_file, SFM_READ, &sfinfo);
+
+    if (infile == NULL)
+    {
+        printf("Input file open failed\n");
+        return 1;
+    }
+
+    SNDFILE *outfile =
+        sf_open(output_file, SFM_WRITE, &sfinfo);
+
+    if (outfile == NULL)
+    {
+        printf("Output file open failed\n");
+        sf_close(infile);
+        return 1;
+    }
 
     /* ====================== BUFFERS ====================== */
 
@@ -164,42 +177,28 @@ eq_gain_config_t eq_gain_cfg =
     float high_out[BLOCK_SIZE];
     float final_out[BLOCK_SIZE];
 
-    /* ====================== SIMULATION SETTINGS ====================== */
-    // Simulate processing 40 frames of data (~0.64 seconds at 16kHz execution rate)
-    uint32_t total_simulation_blocks = 40; 
-    uint32_t current_block_samples = BLOCK_SIZE;
-
-    printf("Starting DSP Pipeline Simulation Loop (Impulse Response Verification)...\n");
+    sf_count_t read_count;
 
     /* ====================== PROCESS LOOP ====================== */
-    for (uint32_t block_idx = 0; block_idx < total_simulation_blocks; block_idx++)
-    {
-        // Generate pure synthetic impulse signal frame
-        for (uint32_t i = 0; i < current_block_samples; i++)
-        {
-            if (block_idx == 0 && i == 0)
-            {
-                buffer[i] = 1.0f; // Sudden delta unit impulse injection
-            }
-            else
-            {
-                buffer[i] = 0.0f; // Absolute baseline digital silence
-            }
-        }
 
+    while ((read_count =
+        sf_read_float(infile,
+                      buffer,
+                      BLOCK_SIZE)) > 0)
+    {
         if (enable_bypass)
         {
-            for (uint32_t i = 0; i < current_block_samples; i++)
+            for (uint32_t i = 0; i < read_count; i++)
                 final_out[i] = buffer[i];
         }
         else if (enable_mute)
         {
-            for (uint32_t i = 0; i < current_block_samples; i++)
+            for (uint32_t i = 0; i < read_count; i++)
                 final_out[i] = 0.0f;
         }
         else
         {
-            for (uint32_t i = 0; i < current_block_samples; i++)
+            for (uint32_t i = 0; i < read_count; i++)
                 temp[i] = buffer[i];
 
             if (enable_eq)
@@ -209,72 +208,111 @@ eq_gain_config_t eq_gain_cfg =
                                   low_out,
                                   mid_out,
                                   high_out,
-                                  current_block_samples);
+                                  (uint32_t)read_count);
 
-                gain_process(&eq_gain_hdl.low,  low_out,  low_out,  current_block_samples);
-                gain_process(&eq_gain_hdl.mid,  mid_out,  mid_out,  current_block_samples);
-                gain_process(&eq_gain_hdl.high, high_out, high_out, current_block_samples);
+                gain_process(&eq_gain_hdl.low,
+                             low_out,
+                             low_out,
+                             (uint32_t)read_count);
 
-                for (uint32_t i = 0; i < current_block_samples; i++)
+                gain_process(&eq_gain_hdl.mid,
+                             mid_out,
+                             mid_out,
+                             (uint32_t)read_count);
+
+                gain_process(&eq_gain_hdl.high,
+                             high_out,
+                             high_out,
+                             (uint32_t)read_count);
+
+                for (uint32_t i = 0; i < read_count; i++)
                 {
-                    temp[i] = low_out[i] + mid_out[i] + high_out[i];
+                    temp[i] =
+                        low_out[i] +
+                        mid_out[i] +
+                        high_out[i];
                 }
             }
 
             if (enable_delay)
             {
-                delay_process(&delay_hdl, temp, temp, current_block_samples);
+                delay_process(&delay_hdl,
+                              temp,
+                              temp,
+                              (uint32_t)read_count);
             }
 
             if (enable_limiter)
             {
-                limiter_process(&limiter_hdl, temp, temp, current_block_samples);
+                limiter_process(&limiter_hdl,
+                                temp,
+                                temp,
+                                (uint32_t)read_count);
             }
 
             if (enable_gain)
             {
-                gain_process(&gain_hdl, temp, final_out, current_block_samples);
+                gain_process(&gain_hdl,
+                             temp,
+                             final_out,
+                             (uint32_t)read_count);
             }
             else
             {
-                for (uint32_t i = 0; i < current_block_samples; i++)
+                for (uint32_t i = 0; i < read_count; i++)
                     final_out[i] = temp[i];
             }
         }
 
-        // Optional debug print to inspect signal decay at specified step sequences
-        if (block_idx == 0 || block_idx == 15 || block_idx == 30)
-        {
-            printf("  [Block %02d] Input[0]: %.4f -> Output[0]: %.4f\n", 
-                   block_idx, buffer[0], final_out[0]);
-        }
+        sf_write_float(outfile,
+                       final_out,
+                       read_count);
     }
 
     /* ====================== DELAY TAIL ====================== */
+
     if (enable_delay)
     {
-        uint32_t remain = delay_hdl.delay_samples;
-        printf("Flushing Delay Tail Loop (%d samples remaining)...\n", remain);
+        uint32_t remain =
+            delay_hdl.delay_samples;
 
         while (remain > 0)
         {
-            uint32_t block = (remain > BLOCK_SIZE) ? BLOCK_SIZE : remain;
+            uint32_t block =
+                (remain > BLOCK_SIZE) ?
+                BLOCK_SIZE :
+                remain;
 
-            delay_process(&delay_hdl, NULL, final_out, block);
+            delay_process(&delay_hdl,
+                          NULL,
+                          final_out,
+                          block);
+
+            sf_write_float(outfile,
+                           final_out,
+                           block);
+
             remain -= block;
         }
     }
 
     /* ====================== CLOSE ====================== */
+
     low_pass_close(&lp_hdl);
     band_pass_close(&bp_hdl);
     high_pass_close(&hp_hdl);
     gain_close(&gain_hdl);
     delay_close(&delay_hdl);
     limiter_close(&limiter_hdl);
+
     equalizer_close(&eq_hdl);
     eq_gain_close(&eq_gain_hdl);
 
-    printf("Processing Complete! Simulation finished successfully with zero file dependencies.\n\n");
+    sf_close(infile);
+    sf_close(outfile);
+
+    printf("Processing Complete! Output saved as: %s\n",
+           output_file);
+
     return 0;
 }
