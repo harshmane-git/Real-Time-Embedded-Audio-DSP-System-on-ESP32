@@ -1,6 +1,7 @@
 /* ========================= equalizer.c ========================= */
 
 #include "equalizer.h"
+#include <stddef.h>
 
 STATUS equalizer_open(uint32_t *pui32Size)
 {

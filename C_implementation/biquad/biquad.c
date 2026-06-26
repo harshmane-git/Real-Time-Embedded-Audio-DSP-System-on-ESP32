@@ -1,5 +1,6 @@
 #include "biquad.h"
 #include <math.h>
+#include <stddef.h>
 
 STATUS biquad_open(uint32_t *pui32Size) {
     if (pui32Size == NULL) return STATUS_NOT_OK;

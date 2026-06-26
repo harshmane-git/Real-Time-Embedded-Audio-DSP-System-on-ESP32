@@ -2,6 +2,7 @@
 
 #include "gain.h"
 #include <math.h>
+#include <stddef.h>
 
 STATUS gain_open(uint32_t *pui32Size)
 {

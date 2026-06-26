@@ -1,4 +1,5 @@
 #include "limiter.h"
+#include <stddef.h>
 
 STATUS limiter_open(uint32_t *pui32Size) {
     if (pui32Size == NULL) return STATUS_NOT_OK;
