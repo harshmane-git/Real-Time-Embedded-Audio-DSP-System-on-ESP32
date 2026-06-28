@@ -12,7 +12,7 @@ STATUS mic_Open(uint32_t *size)
 
 STATUS mic_Initialize(mic_hdl *hdl, const mic_config *cfg)
 {
-    // 🔥 I2S CONFIG (RX)
+    //  I2S CONFIG (RX)
     i2s_chan_handle_t rx_handle;
 
     i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(MIC_I2S_PORT, I2S_ROLE_MASTER);
